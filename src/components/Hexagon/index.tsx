@@ -29,7 +29,7 @@ const Hexagon = ({
   ];
 
   return (
-    <div className="transition-all hover:scale-105" onClick={onClick}>
+    <div className="transition-transform hover:scale-110" onClick={onClick}>
       <svg
         width={width}
         height={height}

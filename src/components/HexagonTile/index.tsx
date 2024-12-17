@@ -1,6 +1,6 @@
 import "./styles.css";
 
-const Hexagon = ({ x, y }) => {
+const HexagonTile = ({ x, y }) => {
   return (
     <div
       className="hexagon"
@@ -11,4 +11,4 @@ const Hexagon = ({ x, y }) => {
   );
 };
 
-export default Hexagon;
+export default HexagonTile;

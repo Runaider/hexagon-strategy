@@ -3,6 +3,13 @@ import Hexagon from "../Hexagon";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import nearbyHexes from "../../utils/nearbyHexes";
+import {
+  Tile_CCCCCC,
+  Tile_FFFCCC,
+  Tile_FFFFFF,
+  Tile_MMMCCC,
+} from "../../constants/hexTiles";
+import HexagonTilePreview from "../HexagonTilePreview";
 
 const GameBoard = ({
   rows,
@@ -14,6 +21,12 @@ const GameBoard = ({
   hexSize: number;
 }) => {
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
+  const [upcomingTiles, setUpcomingTiles] = useState([
+    Tile_FFFCCC,
+    Tile_FFFFFF,
+    Tile_CCCCCC,
+    Tile_MMMCCC,
+  ]);
   const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
   const [unlockedCells, setUnlockedCells] = useState<{
     [key: string]: boolean;
@@ -42,6 +55,11 @@ const GameBoard = ({
       ]),
     []
   );
+  // const upcomingTiles = useMemo(
+  //   () => [Tile_FFFCCC, Tile_FFFFFF, Tile_CCCCCC, Tile_MMMCCC],
+  //   []
+  // );
+
   const hexWidth = Math.sqrt(3) * hexSize; // Width of each hexagon
   const hexHeight = 2 * hexSize; // Height of each hexagon
   const xOffset = hexWidth;
@@ -66,12 +84,17 @@ const GameBoard = ({
     (row: number, col: number) => {
       console.log("clicked", row, col);
       unlockHexesNearClickedHex(row, col);
+      const newTile = upcomingTiles.shift();
+      setUpcomingTiles([...(upcomingTiles ?? [])]);
+      if (!newTile) {
+        return;
+      }
       setCellValues((prev) => ({
         ...prev,
-        [`${row},${col}`]: tileToFill,
+        [`${row},${col}`]: newTile,
       }));
     },
-    [tileToFill, unlockHexesNearClickedHex]
+    [unlockHexesNearClickedHex, upcomingTiles]
   );
 
   // on first render place the core tile in the center
@@ -132,12 +155,29 @@ const GameBoard = ({
                   }}
                 />
               ) : unlockedCells[`${rowIndex},${colIndex}`] ? (
-                <Hexagon
-                  size={hexSize}
-                  muted
+                <HexagonTilePreview
+                  previewTile={upcomingTiles[0]}
+                  hexSize={hexSize}
                   onClick={() => onHexagonClick(rowIndex, colIndex)}
                 />
               ) : (
+                // <div>
+                //   <div className="block hover:hidden">
+                //     <Hexagon
+                //       size={hexSize}
+                //       muted
+                //       onClick={() => onHexagonClick(rowIndex, colIndex)}
+                //     />
+                //   </div>
+                //   <div className="hidden hover:block">
+                //     <HexagonTile
+                //       tile={upcomingTiles[0]}
+                //       hexSize={hexSize}
+                //       muted={false}
+                //       onClick={() => console.log("Upcoming tile clicked")}
+                //     />
+                //   </div>
+                // </div>
                 <></>
               )}
             </div>
@@ -147,6 +187,24 @@ const GameBoard = ({
         grid.push(row);
         return row;
       })}
+      {/* Next hex to place */}
+      <div
+        className="fixed bg-white shadow-md border p-4 rounded-md flex items-center justify-center"
+        style={{ bottom: "30px", left: "50%", transform: "translateX(-50%)" }}
+      >
+        {upcomingTiles.map((tile, index) => (
+          <>
+            <HexagonTile
+              key={index}
+              tile={tile}
+              hexSize={hexSize}
+              muted={false}
+              onClick={() => console.log("Upcoming tile clicked")}
+            />
+            <div className="w-4" />
+          </>
+        ))}
+      </div>
     </div>
   );
 };

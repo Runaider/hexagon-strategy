@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import nearbyHexes from "../../utils/nearbyHexes";
@@ -9,6 +9,8 @@ import {
   Tile_MMMCCC,
 } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
+import classNames from "classnames";
+import { cloneDeep } from "lodash";
 
 const GameBoard = ({
   rows,
@@ -19,6 +21,7 @@ const GameBoard = ({
   cols: number;
   hexSize: number;
 }) => {
+  const keyListenerAdded = useRef(false);
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
   const [upcomingTiles, setUpcomingTiles] = useState([
     Tile_FFFCCC,
@@ -102,6 +105,35 @@ const GameBoard = ({
     unlockHexesNearClickedHex,
   ]);
 
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    console.log(`Key pressed: ${event.key}`);
+    // on r press, rotate the upcoming tile
+    if (event.key === "r") {
+      console.log("Rotating upcoming tile");
+      setUpcomingTiles((prev) => {
+        console.log("before rotate", cloneDeep(prev));
+        prev[0].rotate();
+        console.log(
+          "after rotate",
+          cloneDeep(prev),
+          cloneDeep(prev)[0].getSides()
+        );
+        const newUpcomingTiles = [...prev];
+        return newUpcomingTiles;
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("Adding key listener");
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      console.log("Removing key listener");
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
   return (
     <div>
       {Array.from({ length: rows }, (_, rowIndex) => {
@@ -158,16 +190,22 @@ const GameBoard = ({
         style={{ bottom: "30px", left: "50%", transform: "translateX(-50%)" }}
       >
         {upcomingTiles.map((tile, index) => (
-          <>
-            <HexagonTile
-              key={index}
-              tile={tile}
-              hexSize={hexSize}
-              muted={false}
-              onClick={() => console.log("Upcoming tile clicked")}
-            />
-            <div className="w-4" />
-          </>
+          <div key={index} className="flex">
+            <div className="w-4 " />
+            <div
+              className={classNames(
+                "transition-transform",
+                index == 0 ? "scale-125" : ""
+              )}
+            >
+              <HexagonTile
+                tile={tile}
+                hexSize={hexSize}
+                muted={false}
+                onClick={() => console.log("Upcoming tile clicked")}
+              />
+            </div>
+          </div>
         ))}
       </div>
     </div>

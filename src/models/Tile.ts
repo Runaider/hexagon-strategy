@@ -28,6 +28,7 @@ type TileSide = {
 
 class Tile {
   public sides: TileSide[] = [];
+  public rotation = 0;
   constructor(sections: TileSectionType[]) {
     this.sides = sections.map(
       (section, index) =>
@@ -37,6 +38,19 @@ class Tile {
           color: TypeColor[section],
         } as unknown as TileSide)
     );
+  }
+  // return list of sides adjusted for rotation
+  public getSides() {
+    const rotatedSides = [...this.sides];
+    for (let i = 0; i < this.rotation; i++) {
+      rotatedSides.unshift(rotatedSides.pop() as TileSide);
+    }
+
+    return rotatedSides;
+  }
+
+  public rotate() {
+    this.rotation = (this.rotation + 1) % 6;
   }
 }
 

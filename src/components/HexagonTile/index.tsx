@@ -9,13 +9,13 @@ type Props = {
 };
 
 const HexagonTile = ({ tile, muted, hexSize, onClick }: Props) => {
-  console.log("Tile", tile);
+  // console.log("Tile", tile);
   return (
     <Hexagon
       size={hexSize}
       muted={muted}
       onClick={onClick}
-      colors={tile.sides?.map((side) => side.color)}
+      colors={tile.getSides()?.map((side) => side.color)}
     />
   );
 };

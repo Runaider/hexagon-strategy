@@ -1,6 +1,3 @@
-import React from "react";
-import { TileSide } from "../../models/Tile";
-
 const Hexagon = ({
   size,
   muted,

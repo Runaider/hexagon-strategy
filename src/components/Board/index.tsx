@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Hexagon from "../Hexagon";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import nearbyHexes from "../../utils/nearbyHexes";
@@ -43,22 +42,6 @@ const GameBoard = ({
       ]),
     []
   );
-  const tileToFill = useMemo(
-    () =>
-      new Tile([
-        TileSectionType.Forest,
-        TileSectionType.Mountains,
-        TileSectionType.Desert,
-        TileSectionType.Water,
-        TileSectionType.Swamp,
-        TileSectionType.City,
-      ]),
-    []
-  );
-  // const upcomingTiles = useMemo(
-  //   () => [Tile_FFFCCC, Tile_FFFFFF, Tile_CCCCCC, Tile_MMMCCC],
-  //   []
-  // );
 
   const hexWidth = Math.sqrt(3) * hexSize; // Width of each hexagon
   const hexHeight = 2 * hexSize; // Height of each hexagon
@@ -82,7 +65,6 @@ const GameBoard = ({
 
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
-      console.log("clicked", row, col);
       unlockHexesNearClickedHex(row, col);
       const newTile = upcomingTiles.shift();
       setUpcomingTiles([...(upcomingTiles ?? [])]);
@@ -161,23 +143,6 @@ const GameBoard = ({
                   onClick={() => onHexagonClick(rowIndex, colIndex)}
                 />
               ) : (
-                // <div>
-                //   <div className="block hover:hidden">
-                //     <Hexagon
-                //       size={hexSize}
-                //       muted
-                //       onClick={() => onHexagonClick(rowIndex, colIndex)}
-                //     />
-                //   </div>
-                //   <div className="hidden hover:block">
-                //     <HexagonTile
-                //       tile={upcomingTiles[0]}
-                //       hexSize={hexSize}
-                //       muted={false}
-                //       onClick={() => console.log("Upcoming tile clicked")}
-                //     />
-                //   </div>
-                // </div>
                 <></>
               )}
             </div>

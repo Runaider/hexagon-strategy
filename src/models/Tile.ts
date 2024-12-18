@@ -23,7 +23,7 @@ const TypeColor = {
 type TileSide = {
   type: TileSectionType;
   sideNumber: number;
-  color: typeof TypeColor;
+  color: string;
 };
 
 class Tile {

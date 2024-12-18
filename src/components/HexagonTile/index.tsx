@@ -1,12 +1,21 @@
-import "./styles.css";
+import { Tile } from "../../models/Tile";
+import Hexagon from "../Hexagon";
 
-const HexagonTile = ({ x, y }) => {
+type Props = {
+  tile: Tile;
+  hexSize: number;
+  muted: boolean;
+  onClick: () => void;
+};
+
+const HexagonTile = ({ tile, muted, hexSize, onClick }: Props) => {
+  console.log("Tile", tile);
   return (
-    <div
-      className="hexagon"
-      style={{
-        transform: `translate(${x}px, ${y}px)`,
-      }}
+    <Hexagon
+      size={hexSize}
+      muted={muted}
+      onClick={onClick}
+      sides={tile.sides}
     />
   );
 };

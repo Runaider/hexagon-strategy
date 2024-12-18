@@ -1,22 +1,24 @@
 import React from "react";
+import { TileSide } from "../../models/Tile";
 
 const Hexagon = ({
   size,
-  colors,
   muted,
+  sides,
   onClick,
 }: {
   size: number;
-  colors?: string[];
   muted?: boolean;
+  sides?: TileSide[];
   onClick?: () => void;
 }) => {
   const width = Math.sqrt(3) * size; // Hexagon width
   const height = 2 * size; // Hexagon height
   const sideColors =
-    colors || muted
+    sides?.map((side) => side.color) ||
+    (muted
       ? ["#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5"]
-      : ["#4caf50", "#f44336", "#2196f3", "#ffeb3b", "#9c27b0", "#00bcd4"];
+      : ["#4caf50", "#f44336", "#2196f3", "#ffeb3b", "#9c27b0", "#00bcd4"]);
 
   // Define hexagon points
   const points = [

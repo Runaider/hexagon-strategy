@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from "react";
 import Hexagon from "../Hexagon";
+import { Tile, TileSectionType } from "../../models/Tile";
+import HexagonTile from "../HexagonTile";
 
 const GameBoard = ({
   rows,
@@ -10,10 +12,15 @@ const GameBoard = ({
   cols: number;
   hexSize: number;
 }) => {
-  const [cellValues, setCellValues] = useState(
-    {} as { [key: string]: JSX.Element }
-  );
-
+  const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
+  const tileToFill = new Tile([
+    TileSectionType.Forest,
+    TileSectionType.Mountains,
+    TileSectionType.Desert,
+    TileSectionType.Water,
+    TileSectionType.Swamp,
+    TileSectionType.City,
+  ]);
   const hexWidth = Math.sqrt(3) * hexSize; // Width of each hexagon
   const hexHeight = 2 * hexSize; // Height of each hexagon
   const xOffset = hexWidth;
@@ -66,7 +73,7 @@ const GameBoard = ({
       console.log("nearby", nearbyHexes(row, col));
       setCellValues((prev) => ({
         ...prev,
-        [`${row},${col}`]: <Hexagon size={hexSize} />,
+        [`${row},${col}`]: tileToFill,
       }));
     },
     [hexSize, nearbyHexes]
@@ -98,8 +105,20 @@ const GameBoard = ({
                 {rowIndex};{colIndex}
               </div>
               {cellValues[`${rowIndex},${colIndex}`] ? (
-                cellValues[`${rowIndex},${colIndex}`]
+                <HexagonTile
+                  tile={cellValues[`${rowIndex},${colIndex}`]}
+                  hexSize={hexSize}
+                  muted={false}
+                  onClick={function (): void {
+                    console.log("Filed tile clicked", rowIndex, colIndex);
+                  }}
+                />
               ) : (
+                // <Hexagon
+                //   size={hexSize}
+                //   onClick={() => onHexagonClick(rowIndex, colIndex)}
+                //   sides={tileToFill.sides}
+                // />
                 <Hexagon
                   size={hexSize}
                   muted

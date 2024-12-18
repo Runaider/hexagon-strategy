@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Hexagon from "../Hexagon";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
+import nearbyHexes from "../../utils/nearbyHexes";
 
 const GameBoard = ({
   rows,
@@ -12,15 +13,35 @@ const GameBoard = ({
   cols: number;
   hexSize: number;
 }) => {
+  const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
   const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
-  const tileToFill = new Tile([
-    TileSectionType.Forest,
-    TileSectionType.Mountains,
-    TileSectionType.Desert,
-    TileSectionType.Water,
-    TileSectionType.Swamp,
-    TileSectionType.City,
-  ]);
+  const [unlockedCells, setUnlockedCells] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const coreTile = useMemo(
+    () =>
+      new Tile([
+        TileSectionType.Castle,
+        TileSectionType.Castle,
+        TileSectionType.Castle,
+        TileSectionType.Castle,
+        TileSectionType.Castle,
+        TileSectionType.Castle,
+      ]),
+    []
+  );
+  const tileToFill = useMemo(
+    () =>
+      new Tile([
+        TileSectionType.Forest,
+        TileSectionType.Mountains,
+        TileSectionType.Desert,
+        TileSectionType.Water,
+        TileSectionType.Swamp,
+        TileSectionType.City,
+      ]),
+    []
+  );
   const hexWidth = Math.sqrt(3) * hexSize; // Width of each hexagon
   const hexHeight = 2 * hexSize; // Height of each hexagon
   const xOffset = hexWidth;
@@ -28,41 +49,15 @@ const GameBoard = ({
 
   const grid = [];
 
-  const nearbyHexes = useCallback(
+  const unlockHexesNearClickedHex = useCallback(
     (row: number, col: number) => {
-      const nearby = [];
-      const isOffset = row % 2 === 1;
-
-      if (row > 0) {
-        nearby.push([row - 1, col]); // Top
-      }
-      if (col > 0) {
-        nearby.push([row, col - 1]); // Left
-      }
-      if (col < cols - 1) {
-        nearby.push([row, col + 1]); // Right
-      }
-      if (row < rows - 1) {
-        nearby.push([row + 1, col]); // Bottom
-      }
-
-      if (isOffset) {
-        if (row > 0 && col < cols - 1) {
-          nearby.push([row - 1, col + 1]); // Top-Right
-        }
-        if (row < rows - 1 && col < cols - 1) {
-          nearby.push([row + 1, col + 1]); // Bottom-Right
-        }
-      } else {
-        if (row > 0 && col > 0) {
-          nearby.push([row - 1, col - 1]); // Top-Left
-        }
-        if (row < rows - 1 && col > 0) {
-          nearby.push([row + 1, col - 1]); // Bottom-Left
-        }
-      }
-
-      return nearby;
+      const nearby = nearbyHexes(row, col, rows, cols);
+      nearby.forEach(([nearbyRow, nearbyCol]) => {
+        setUnlockedCells((prev) => ({
+          ...prev,
+          [`${nearbyRow},${nearbyCol}`]: true,
+        }));
+      });
     },
     [cols, rows]
   );
@@ -70,14 +65,37 @@ const GameBoard = ({
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
       console.log("clicked", row, col);
-      console.log("nearby", nearbyHexes(row, col));
+      unlockHexesNearClickedHex(row, col);
       setCellValues((prev) => ({
         ...prev,
         [`${row},${col}`]: tileToFill,
       }));
     },
-    [hexSize, nearbyHexes]
+    [tileToFill, unlockHexesNearClickedHex]
   );
+
+  // on first render place the core tile in the center
+  useEffect(() => {
+    if (isFirstTilePlaced) {
+      return;
+    }
+    setIsFirstTilePlaced(true);
+    const centerRow = Math.floor(rows / 2);
+    const centerCol = Math.floor(cols / 2);
+    unlockHexesNearClickedHex(centerRow, centerCol);
+    setCellValues((prev) => ({
+      ...prev,
+      [`${centerRow},${centerCol}`]: coreTile,
+    }));
+  }, [
+    coreTile,
+    cols,
+    rows,
+    isFirstTilePlaced,
+    hexWidth,
+    hexHeight,
+    unlockHexesNearClickedHex,
+  ]);
 
   return (
     <div>
@@ -113,17 +131,14 @@ const GameBoard = ({
                     console.log("Filed tile clicked", rowIndex, colIndex);
                   }}
                 />
-              ) : (
-                // <Hexagon
-                //   size={hexSize}
-                //   onClick={() => onHexagonClick(rowIndex, colIndex)}
-                //   sides={tileToFill.sides}
-                // />
+              ) : unlockedCells[`${rowIndex},${colIndex}`] ? (
                 <Hexagon
                   size={hexSize}
                   muted
                   onClick={() => onHexagonClick(rowIndex, colIndex)}
                 />
+              ) : (
+                <></>
               )}
             </div>
           );

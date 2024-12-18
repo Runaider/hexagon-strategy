@@ -4,18 +4,18 @@ import { TileSide } from "../../models/Tile";
 const Hexagon = ({
   size,
   muted,
-  sides,
+  colors,
   onClick,
 }: {
   size: number;
   muted?: boolean;
-  sides?: TileSide[];
+  colors?: string[];
   onClick?: () => void;
 }) => {
   const width = Math.sqrt(3) * size; // Hexagon width
   const height = 2 * size; // Hexagon height
   const sideColors =
-    sides?.map((side) => side.color) ||
+    colors ||
     (muted
       ? ["#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5", "#F5F5F5"]
       : ["#4caf50", "#f44336", "#2196f3", "#ffeb3b", "#9c27b0", "#00bcd4"]);

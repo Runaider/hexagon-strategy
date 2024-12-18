@@ -15,7 +15,7 @@ const HexagonTile = ({ tile, muted, hexSize, onClick }: Props) => {
       size={hexSize}
       muted={muted}
       onClick={onClick}
-      sides={tile.sides}
+      colors={tile.sides?.map((side) => side.color)}
     />
   );
 };

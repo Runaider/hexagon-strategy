@@ -34,4 +34,47 @@ const nearbyHexes = (row: number, col: number, rows: number, cols: number) => {
   return nearby;
 };
 
-export default nearbyHexes;
+// indexes of hexes connected to a side of a hex
+const getHexConnectedToSide = (
+  row: number,
+  col: number,
+  rows: number,
+  cols: number,
+  side: number
+) => {
+  const isOffset = row % 2 === 1;
+
+  if (isOffset) {
+    switch (side) {
+      case 0: // Top-Right
+        return row > 0 && col < cols - 1 ? [row - 1, col + 1] : null;
+      case 1: // Right
+        return col < cols - 1 ? [row, col + 1] : null;
+      case 2: // Bottom-Right
+        return row < rows - 1 && col < cols - 1 ? [row + 1, col + 1] : null;
+      case 3: // Bottom-Left
+        return row < rows - 1 && col > 0 ? [row + 1, col] : null;
+      case 4: // Left
+        return col > 0 ? [row, col - 1] : null;
+      case 5: // Top-Left
+        return row > 0 && col > 0 ? [row - 1, col] : null;
+    }
+  } else {
+    switch (side) {
+      case 0: // Top-Right
+        return row > 0 && col < cols - 1 ? [row - 1, col] : null;
+      case 1: // Right
+        return col < cols - 1 ? [row, col + 1] : null;
+      case 2: // Bottom-Right
+        return row < rows - 1 && col < cols - 1 ? [row + 1, col] : null;
+      case 3: // Bottom-Left
+        return row < rows - 1 && col > 0 ? [row + 1, col - 1] : null;
+      case 4: // Left
+        return col > 0 ? [row, col - 1] : null;
+      case 5: // Top-Left
+        return row > 0 && col > 0 ? [row - 1, col - 1] : null;
+    }
+  }
+};
+
+export { nearbyHexes, getHexConnectedToSide };

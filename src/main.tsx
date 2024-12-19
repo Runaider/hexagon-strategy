@@ -5,6 +5,6 @@ import GameBoard from "./components/Board/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-  <GameBoard rows={40} cols={40} hexSize={40} />
+  <GameBoard rows={40} cols={40} hexSize={50} />
   // </StrictMode>
 );

@@ -1,23 +1,19 @@
 enum TileSectionType {
-  Forest,
-  Mountains,
-  Desert,
-  Water,
-  Swamp,
-  City,
-  Castle,
-  Road,
+  Forest = "Forest",
+  Mountains = "Mountains",
+  Water = "Water",
+  Plains = "Plains",
+  City = "City",
+  Castle = "Castle",
 }
 
 const TypeColor = {
   [TileSectionType.Forest]: "#096120",
   [TileSectionType.Mountains]: "#494d4a",
-  [TileSectionType.Desert]: "#c4ac41",
   [TileSectionType.Water]: "#4178c4",
-  [TileSectionType.Swamp]: "#6e9948",
+  [TileSectionType.Plains]: "#6e9948",
   [TileSectionType.City]: "#7d5b38",
   [TileSectionType.Castle]: "#140c03",
-  [TileSectionType.Road]: "#9da1a0",
 };
 
 type TileSide = {

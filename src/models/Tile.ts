@@ -5,6 +5,7 @@ enum TileSectionType {
   Plains = "Plains",
   City = "City",
   Castle = "Castle",
+  Toxic = "Toxic",
 }
 
 const TypeColor = {
@@ -14,6 +15,7 @@ const TypeColor = {
   [TileSectionType.Plains]: "#6e9948",
   [TileSectionType.City]: "#7d5b38",
   [TileSectionType.Castle]: "#140c03",
+  [TileSectionType.Toxic]: "#7209b7",
 };
 
 type TileSide = {

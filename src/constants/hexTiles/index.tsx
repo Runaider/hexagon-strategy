@@ -1,5 +1,14 @@
 import { Tile, TileSectionType } from "../../models/Tile";
 
+const Tile_TOXIC = new Tile([
+  TileSectionType.Toxic,
+  TileSectionType.Toxic,
+  TileSectionType.Toxic,
+  TileSectionType.Toxic,
+  TileSectionType.Toxic,
+  TileSectionType.Toxic,
+]);
+
 const Tile_FFFCCC = new Tile([
   TileSectionType.Forest,
   TileSectionType.Forest,
@@ -198,7 +207,242 @@ const Tile_PPPFFF = new Tile([
   TileSectionType.Forest,
 ]);
 
+const Tile_FFMMPP = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
+const Tile_MMPPWW = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_PPWWCC = new Tile([
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_WWCCFF = new Tile([
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_CCMMPP = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
+const Tile_MMPPCC = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_PPCCWW = new Tile([
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_CCWWFF = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_WWFFMM = new Tile([
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+]);
+
+const Tile_FFMMCC = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_MMCCWW = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_CCWWPP = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
+const Tile_WWPPFF = new Tile([
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_FFCCMM = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+]);
+
+const Tile_MMCCPP = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
+const Tile_CCPPWW = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_PPWWFF = new Tile([
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_WWFFCC = new Tile([
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_CCMMFF = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_MMFFWW = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_FFWWCC = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_CCFFMM = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+]);
+
+const Tile_MMFFCC = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+const Tile_CCMMWW = new Tile([
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+]);
+
+const Tile_MMWWFF = new Tile([
+  TileSectionType.Mountains,
+  TileSectionType.Mountains,
+  TileSectionType.Water,
+  TileSectionType.Water,
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+]);
+
+const Tile_FFCCPP = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
 const allTiles = [
+  //full/ half tiles
   Tile_FFFCCC,
   Tile_FFFFFF,
   Tile_CCCCCC,
@@ -221,10 +465,38 @@ const allTiles = [
   Tile_MMMFFF,
   Tile_WWWFFF,
   Tile_PPPFFF,
+  //   3part tiles
+  Tile_FFMMPP,
+  Tile_MMPPWW,
+  Tile_PPWWCC,
+  Tile_WWCCFF,
+  Tile_CCMMPP,
+  Tile_MMPPCC,
+  Tile_PPCCWW,
+  Tile_CCWWFF,
+  Tile_WWFFMM,
+  Tile_FFMMCC,
+  Tile_MMCCWW,
+  Tile_CCWWPP,
+  Tile_WWPPFF,
+  Tile_FFCCMM,
+  Tile_MMCCPP,
+  Tile_CCPPWW,
+  Tile_PPWWFF,
+  Tile_WWFFCC,
+  Tile_CCMMFF,
+  Tile_MMFFWW,
+  Tile_FFWWCC,
+  Tile_CCFFMM,
+  Tile_MMFFCC,
+  Tile_CCMMWW,
+  Tile_MMWWFF,
+  Tile_FFCCPP,
 ];
 
 export {
   allTiles,
+  Tile_TOXIC,
   Tile_FFFCCC,
   Tile_FFFFFF,
   Tile_CCCCCC,

@@ -5,7 +5,7 @@ import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
 import { allTiles, Tile_TOXIC } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
-import { cloneDeep, set, shuffle } from "lodash";
+import { cloneDeep, shuffle } from "lodash";
 
 const GameBoard = ({
   rows,
@@ -20,12 +20,7 @@ const GameBoard = ({
 
   const [nextTileIndex, setNextTileIndex] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
-  const [resourcesPerTurn, setResourcesPerTurn] = useState({
-    wood: 0,
-    stone: 0,
-    food: 0,
-    gold: 0,
-  });
+
   const [recources, setResources] = useState({
     wood: 0,
     stone: 0,
@@ -76,13 +71,6 @@ const GameBoard = ({
 
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
-    // apply resources
-    // setResources((prev) => ({
-    //   wood: prev.wood + resourcesPerTurn.wood,
-    //   stone: prev.stone + resourcesPerTurn.stone,
-    //   food: prev.food + resourcesPerTurn.food,
-    //   gold: prev.gold + resourcesPerTurn.gold,
-    // }));
     setResources((prev) => {
       const newResources = { ...prev };
       Object.entries(tileResourceProduction).forEach(([key, value]) => {

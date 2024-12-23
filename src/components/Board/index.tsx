@@ -1,11 +1,29 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Tile, TileSectionType } from "../../models/Tile";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Tile, TileSectionType, TileSide } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
 import { allTiles, Tile_TOXIC } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
+
+type Zones = {
+  [TileSectionType.Forest]: {
+    hexes: { row: number; col: number; sides: TileSide[] }[];
+  }[];
+  [TileSectionType.Water]: {
+    hexes: { row: number; col: number; sides: TileSide[] }[];
+  }[];
+  [TileSectionType.Mountains]: {
+    hexes: { row: number; col: number; sides: TileSide[] }[];
+  }[];
+  [TileSectionType.City]: {
+    hexes: { row: number; col: number; sides: TileSide[] }[];
+  }[];
+  [TileSectionType.Plains]: {
+    hexes: { row: number; col: number; sides: TileSide[] }[];
+  }[];
+};
 
 const GameBoard = ({
   rows,
@@ -20,6 +38,9 @@ const GameBoard = ({
 
   const [nextTileIndex, setNextTileIndex] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
+  const [highlightedHexes, setHighlightedHexes] = useState<
+    { row: number; col: number }[]
+  >([]);
 
   const [recources, setResources] = useState({
     wood: 0,
@@ -46,6 +67,13 @@ const GameBoard = ({
       isLocked: boolean;
     };
   }>({});
+  const [zones, setZones] = useState<Zones>({
+    [TileSectionType.Forest]: [],
+    [TileSectionType.Water]: [],
+    [TileSectionType.Mountains]: [],
+    [TileSectionType.City]: [],
+    [TileSectionType.Plains]: [],
+  });
   const [unlockedCells, setUnlockedCells] = useState<{
     [key: string]: boolean;
   }>({});
@@ -68,6 +96,91 @@ const GameBoard = ({
   const yOffset = (3 / 4) * hexHeight; // Vertical distance between rows
 
   const grid = [];
+
+  const setZonesAfterTilePlacement = useCallback(
+    (row: number, col: number, tile: Tile) => {
+      const tileSides = tile.getSides();
+      const newZones = cloneDeep(zones);
+      tileSides.forEach((side, index) => {
+        const connectedHex = getHexConnectedToSide(row, col, rows, cols, index);
+        if (!connectedHex) {
+          return;
+        }
+        const [connectedRow, connectedCol] = connectedHex;
+        const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
+        if (!connectedTile) {
+          return;
+        }
+        const connectedSide = connectedTile.getSides()[(index + 3) % 6];
+
+        const isConnectedSideSameType = connectedSide.type === side.type;
+        if (!isConnectedSideSameType) {
+          return;
+        }
+
+        const isConnectedSideInZone = newZones[side.type].some((zone) =>
+          zone.hexes.some(
+            (hex) => hex.row === connectedRow && hex.col === connectedCol
+          )
+        );
+        const isSideAlreadyInZone = newZones[side.type].some((zone) =>
+          zone.hexes.some((hex) => hex.row === row && hex.col === col)
+        );
+        if (isConnectedSideInZone) {
+          // add the current hex to the zone
+          const zone = newZones[side.type].find((zone) =>
+            zone.hexes.some(
+              (hex) => hex.row === connectedRow && hex.col === connectedCol
+            )
+          );
+          if (!zone) {
+            console.error("Zone not found");
+            return;
+          }
+          zone.hexes.push({
+            row,
+            col,
+            sides: tileSides.filter((_) => _.type == side.type),
+          });
+        } else if (isSideAlreadyInZone && !isConnectedSideInZone) {
+          // add the connected hex to the zone
+          const zone = newZones[side.type].find((zone) =>
+            zone.hexes.some((hex) => hex.row === row && hex.col === col)
+          );
+          if (!zone) {
+            console.error("Zone not found");
+            return;
+          }
+          zone.hexes.push({
+            row: connectedRow,
+            col: connectedCol,
+            sides: connectedTile.getSides().filter((_) => _.type == side.type),
+          });
+        } else {
+          // create a new zone
+          newZones[side.type].push({
+            hexes: [
+              {
+                row: connectedRow,
+                col: connectedCol,
+                sides: connectedTile
+                  .getSides()
+                  .filter((_) => _.type == side.type),
+              },
+              {
+                row,
+                col,
+                sides: tileSides.filter((_) => _.type == side.type),
+              },
+            ],
+          });
+        }
+      });
+      console.log("Zones", newZones);
+      setZones(newZones);
+    },
+    [cellValues, cols, rows, zones]
+  );
 
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
@@ -273,12 +386,14 @@ const GameBoard = ({
       if (Math.random() < 0.1) {
         placeToxicHexOnNearbyFreeHex(row, col);
       }
+      setZonesAfterTilePlacement(row, col, newTile);
       onTurnChange();
     },
     [
       nextTileIndex,
       onTurnChange,
       placeToxicHexOnNearbyFreeHex,
+      setZonesAfterTilePlacement,
       unlockHexesNearClickedHex,
       upcomingTiles,
       updateResourceCounts,
@@ -345,7 +460,15 @@ const GameBoard = ({
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
-              className="hover:z-30"
+              className={classNames(
+                "transition-transform",
+                "hover:z-30",
+                highlightedHexes.some(
+                  (hex) => hex.row === rowIndex && hex.col === colIndex
+                )
+                  ? "scale-110 z-30"
+                  : ""
+              )}
               style={{
                 position: "absolute",
                 left: `${x}px`,
@@ -448,6 +571,103 @@ const GameBoard = ({
         <div className="w-4" />
         <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
           Turn: {currentTurn}
+        </div>
+      </div>
+      {/* zone numbers */}
+      <div
+        className="fixed   rounded-md flex text-md text-black"
+        style={{ right: "30px", top: "50%", transform: "translateY(-50%)" }}
+      >
+        <div className="flex flex-col border p-4 shadow-md  bg-white rounded-md text-md">
+          Forest:{" "}
+          <div className="flex flex-col">
+            {zones[TileSectionType.Forest].map((zone, index) => (
+              <div
+                key={index}
+                className="ml-4"
+                onMouseOver={() => {
+                  setHighlightedHexes(
+                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
+                  );
+                }}
+                onMouseOut={() => setHighlightedHexes([])}
+              >
+                #{index} - {zone.hexes.length}
+              </div>
+            ))}
+          </div>
+          <div className="w-4" />
+          Mountains:
+          <div className="flex flex-col">
+            {zones[TileSectionType.Mountains].map((zone, index) => (
+              <div
+                key={index}
+                className="ml-4"
+                onMouseOver={() => {
+                  setHighlightedHexes(
+                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
+                  );
+                }}
+                onMouseOut={() => setHighlightedHexes([])}
+              >
+                #{index} - {zone.hexes.length}
+              </div>
+            ))}
+          </div>
+          <div className="w-4" />
+          Plains:
+          <div className="flex flex-col">
+            {zones[TileSectionType.Plains].map((zone, index) => (
+              <div
+                key={index}
+                className="ml-4"
+                onMouseOver={() => {
+                  setHighlightedHexes(
+                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
+                  );
+                }}
+                onMouseOut={() => setHighlightedHexes([])}
+              >
+                #{index} - {zone.hexes.length}
+              </div>
+            ))}
+          </div>
+          <div className="w-4" />
+          Lakes:
+          <div className="flex flex-col">
+            {zones[TileSectionType.Water].map((zone, index) => (
+              <div
+                key={index}
+                className="ml-4"
+                onMouseOver={() => {
+                  setHighlightedHexes(
+                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
+                  );
+                }}
+                onMouseOut={() => setHighlightedHexes([])}
+              >
+                #{index} - {zone.hexes.length}
+              </div>
+            ))}
+          </div>
+          <div className="w-4" />
+          City:{" "}
+          <div className="flex flex-col">
+            {zones[TileSectionType.City].map((zone, index) => (
+              <div
+                key={index}
+                className="ml-4"
+                onMouseOver={() => {
+                  setHighlightedHexes(
+                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
+                  );
+                }}
+                onMouseOut={() => setHighlightedHexes([])}
+              >
+                #{index} - {zone.hexes.length}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       {/* Next hex to place */}

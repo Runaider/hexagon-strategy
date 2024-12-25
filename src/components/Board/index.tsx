@@ -1,29 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Tile, TileSectionType, TileSide } from "../../models/Tile";
+import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
 import { allTiles, Tile_TOXIC } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
-
-type Zones = {
-  [TileSectionType.Forest]: {
-    hexes: { row: number; col: number; sides: TileSide[] }[];
-  }[];
-  [TileSectionType.Water]: {
-    hexes: { row: number; col: number; sides: TileSide[] }[];
-  }[];
-  [TileSectionType.Mountains]: {
-    hexes: { row: number; col: number; sides: TileSide[] }[];
-  }[];
-  [TileSectionType.City]: {
-    hexes: { row: number; col: number; sides: TileSide[] }[];
-  }[];
-  [TileSectionType.Plains]: {
-    hexes: { row: number; col: number; sides: TileSide[] }[];
-  }[];
-};
+import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 
 const GameBoard = ({
   rows,
@@ -35,7 +18,7 @@ const GameBoard = ({
   hexSize: number;
 }) => {
   const [isGameOver, setIsGameOver] = useState(false);
-
+  const [score, setScore] = useState(0);
   const [nextTileIndex, setNextTileIndex] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [highlightedHexes, setHighlightedHexes] = useState<
@@ -451,6 +434,15 @@ const GameBoard = ({
     };
   }, [handleKeyDown]);
 
+  useEffect(() => {
+    if (currentTurn == 10) {
+      const { score, scoreLog } = calculateScoreFromGridData(zones);
+      console.log(scoreLog);
+      alert(`Game over! Your score is ${score}`);
+      setScore(score);
+    }
+  }, [cellValues, currentTurn, isGameOver, zones]);
+
   return (
     <div>
       {Array.from({ length: rows }, (_, rowIndex) => {
@@ -517,7 +509,7 @@ const GameBoard = ({
       })}
       {/* resource counts */}
       <div
-        className="fixed   rounded-md flex text-md text-black"
+        className="fixed rounded-md flex text-md text-black"
         style={{ top: "30px", left: "50%", transform: "translateX(-50%)" }}
       >
         <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
@@ -571,6 +563,10 @@ const GameBoard = ({
         <div className="w-4" />
         <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
           Turn: {currentTurn}
+        </div>
+        <div className="w-4" />
+        <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
+          Score: {score}
         </div>
       </div>
       {/* zone numbers */}

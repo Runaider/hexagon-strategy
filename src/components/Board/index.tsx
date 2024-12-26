@@ -7,6 +7,7 @@ import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
+import useStatTracker from "@/hooks/useStatTracker";
 
 const GameBoard = ({
   rows,
@@ -25,12 +26,9 @@ const GameBoard = ({
     { row: number; col: number }[]
   >([]);
 
-  const [recources, setResources] = useState({
-    wood: 0,
-    stone: 0,
-    food: 0,
-    gold: 0,
-  });
+  const { cellValues, resources, tileResourceProduction, setCell } =
+    useStatTracker({ rows, cols });
+
   const [sectionsCounts, setSectionsCounts] = useState({
     [TileSectionType.City]: 0,
     [TileSectionType.Forest]: 0,
@@ -40,16 +38,7 @@ const GameBoard = ({
   });
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
   const [upcomingTiles, setUpcomingTiles] = useState(shuffle([...allTiles]));
-  const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
-  const [tileResourceProduction, setTileResourceProduction] = useState<{
-    [key: string]: {
-      wood: number;
-      stone: number;
-      food: number;
-      gold: number;
-      isLocked: boolean;
-    };
-  }>({});
+
   const [zones, setZones] = useState<Zones>({
     [TileSectionType.Forest]: [],
     [TileSectionType.Water]: [],
@@ -167,21 +156,7 @@ const GameBoard = ({
 
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
-    setResources((prev) => {
-      const newResources = { ...prev };
-      Object.entries(tileResourceProduction).forEach(([key, value]) => {
-        const [row, col] = key.split(",").map(Number);
-        if (value.isLocked) {
-          return;
-        }
-        newResources.wood += value?.wood || 0;
-        newResources.stone += value?.stone || 0;
-        newResources.food += value?.food || 0;
-        newResources.gold += value?.gold || 0;
-      });
-      return newResources;
-    });
-  }, [tileResourceProduction]);
+  }, []);
 
   const unlockHexesNearClickedHex = useCallback(
     (row: number, col: number) => {
@@ -203,154 +178,30 @@ const GameBoard = ({
       const nearby = nearbyHexes(row, col, rows, cols);
       for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
         if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-          setCellValues((prev) => ({
-            ...prev,
-            [`${nearbyRow},${nearbyCol}`]: Tile_TOXIC,
-          }));
+          setCell(nearbyRow, nearbyCol, Tile_TOXIC);
+
           return;
         }
       }
     },
-    [cellValues, cols, rows]
+    [cellValues, cols, rows, setCell]
   );
 
   const updateSectionCounts = useCallback(
     (tile: Tile) => {
       const newSectionCounts = { ...sectionsCounts };
       tile.sides.forEach((side) => {
-        newSectionCounts[side.type] += 1;
+        newSectionCounts[side.type as keyof typeof newSectionCounts] += 1;
       });
       setSectionsCounts(newSectionCounts);
     },
     [sectionsCounts]
   );
 
-  const updateResourceCounts = useCallback(
-    (newTileRow: number, newTileCol: number, newTile: Tile) => {
-      const tileResources = { ...tileResourceProduction };
-      // const resourceCounts = { ...resourcesPerTurn };
-      // side 1 is the top right side
-      // side 2 is the right side
-      // side 3 is the bottom right side
-      // side 4 is the bottom left side
-      // side 5 is the left side
-      // side 6 is the top left side
-      // tiles generate resources only when they connected to same type of tile on other hex
-      // console.log("tileSides", newTile.getSides());
-      newTile.getSides().forEach((side, index) => {
-        console.log("=================");
-        console.log("Checking side", index, side.type);
-        const connectedHex = getHexConnectedToSide(
-          newTileRow,
-          newTileCol,
-          rows,
-          cols,
-          index
-        );
-        if (!connectedHex) {
-          console.warn("No connected hex found");
-          return;
-        }
-        const [connectedRow, connectedCol] = connectedHex;
-        // console.log(
-        //   "New tile side",
-        //   side,
-        //   side.type,
-        //   "connectedHex",
-        //   connectedHex
-        // );
-        const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
-        if (!connectedTile) {
-          return;
-        }
-        // console.log("Connected tile found", connectedTile);
-        const connectedSide = connectedTile.getSides()[(index + 3) % 6];
-
-        // console.log("Connected side", connectedSide.type);
-
-        if (connectedSide.type === side.type) {
-          switch (side.type) {
-            case TileSectionType.Forest:
-              console.log("Adding wood");
-              tileResources[`${newTileRow},${newTileCol}`] = {
-                ...tileResources[`${newTileRow},${newTileCol}`],
-                wood:
-                  (tileResources[`${newTileRow},${newTileCol}`]?.wood || 0) +
-                  0.5,
-              };
-              tileResources[`${connectedRow},${connectedCol}`] = {
-                ...tileResources[`${connectedRow},${connectedCol}`],
-                wood:
-                  (tileResources[`${connectedRow},${connectedCol}`]?.wood ||
-                    0) + 0.5,
-              };
-
-              break;
-            case TileSectionType.Mountains:
-              console.log("Adding stone");
-              tileResources[`${newTileRow},${newTileCol}`] = {
-                ...tileResources[`${newTileRow},${newTileCol}`],
-                stone:
-                  (tileResources[`${newTileRow},${newTileCol}`]?.stone || 0) +
-                  0.5,
-              };
-              tileResources[`${connectedRow},${connectedCol}`] = {
-                ...tileResources[`${connectedRow},${connectedCol}`],
-                stone:
-                  (tileResources[`${connectedRow},${connectedCol}`]?.stone ||
-                    0) + 0.5,
-              };
-
-              break;
-            case TileSectionType.Plains:
-              console.log("Adding food");
-              tileResources[`${newTileRow},${newTileCol}`] = {
-                ...tileResources[`${newTileRow},${newTileCol}`],
-                food:
-                  (tileResources[`${newTileRow},${newTileCol}`]?.food || 0) +
-                  0.5,
-              };
-              tileResources[`${connectedRow},${connectedCol}`] = {
-                ...tileResources[`${connectedRow},${connectedCol}`],
-                food:
-                  (tileResources[`${connectedRow},${connectedCol}`]?.food ||
-                    0) + 0.5,
-              };
-
-              break;
-            case TileSectionType.Water:
-              break;
-            case TileSectionType.City:
-              console.log("Adding gold");
-              tileResources[`${newTileRow},${newTileCol}`] = {
-                ...tileResources[`${newTileRow},${newTileCol}`],
-                gold:
-                  (tileResources[`${newTileRow},${newTileCol}`]?.gold || 0) +
-                  0.5,
-              };
-              tileResources[`${connectedRow},${connectedCol}`] = {
-                ...tileResources[`${connectedRow},${connectedCol}`],
-                gold:
-                  (tileResources[`${connectedRow},${connectedCol}`]?.gold ||
-                    0) + 0.5,
-              };
-
-              break;
-          }
-        }
-      });
-
-      // setResourcesPerTurn(resourceCounts);
-      setTileResourceProduction(tileResources);
-    },
-    [cellValues, cols, rows, tileResourceProduction]
-  );
-
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
       unlockHexesNearClickedHex(row, col);
 
-      // const newTile = upcomingTiles.shift();
       const newTile = upcomingTiles[nextTileIndex];
       upcomingTiles.splice(nextTileIndex, 1);
       updateSectionCounts(newTile!);
@@ -360,12 +211,8 @@ const GameBoard = ({
         return;
       }
 
-      setCellValues((prev) => ({
-        ...prev,
-        [`${row},${col}`]: cloneDeep(newTile),
-      }));
-      updateResourceCounts(row, col, newTile);
-      // 20% chance to place a toxic hex
+      setCell(row, col, newTile);
+
       if (Math.random() < 0.1) {
         placeToxicHexOnNearbyFreeHex(row, col);
       }
@@ -376,10 +223,10 @@ const GameBoard = ({
       nextTileIndex,
       onTurnChange,
       placeToxicHexOnNearbyFreeHex,
+      setCell,
       setZonesAfterTilePlacement,
       unlockHexesNearClickedHex,
       upcomingTiles,
-      updateResourceCounts,
       updateSectionCounts,
     ]
   );
@@ -393,10 +240,7 @@ const GameBoard = ({
     const centerRow = Math.floor(rows / 2);
     const centerCol = Math.floor(cols / 2);
     unlockHexesNearClickedHex(centerRow, centerCol);
-    setCellValues((prev) => ({
-      ...prev,
-      [`${centerRow},${centerCol}`]: coreTile,
-    }));
+    setCell(centerRow, centerCol, coreTile);
   }, [
     coreTile,
     cols,
@@ -405,6 +249,7 @@ const GameBoard = ({
     hexWidth,
     hexHeight,
     unlockHexesNearClickedHex,
+    setCell,
   ]);
 
   const handleKeyDown = useCallback(
@@ -537,28 +382,28 @@ const GameBoard = ({
             (acc, curr) => acc + (curr?.wood || 0),
             0
           )}
-          : {recources?.wood || 0}
+          : {resources?.wood || 0}
           <div className="w-4" />
           Stone +{" "}
           {Object.values(tileResourceProduction).reduce(
             (acc, curr) => acc + (curr?.stone || 0),
             0
           )}
-          : {recources?.stone || 0}
+          : {resources?.stone || 0}
           <div className="w-4" />
           Food +{" "}
           {Object.values(tileResourceProduction).reduce(
             (acc, curr) => acc + (curr?.food || 0),
             0
           )}
-          : {recources?.food || 0}
+          : {resources?.food || 0}
           <div className="w-4" />
           Gold +{" "}
           {Object.values(tileResourceProduction).reduce(
             (acc, curr) => acc + (curr?.gold || 0),
             0
           )}{" "}
-          : {recources?.gold || 0}
+          : {resources?.gold || 0}
         </div>
         <div className="w-4" />
         <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">

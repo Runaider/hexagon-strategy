@@ -20,7 +20,8 @@
       "@/utils/*": ["src/utils/*"],
       "@/contexts/*": ["src/lib/*"],
       "@/models/*": ["src/models/*"],
-      "@/hooks/*": ["src/hooks/*"]
+      "@/hooks/*": ["src/hooks/*"],
+      "@/constants/*": ["src/constants/*"]
     },
     "strict": true,
     "forceConsistentCasingInFileNames": true,

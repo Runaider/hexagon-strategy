@@ -13,7 +13,11 @@ type Quest = {
   completed: boolean;
 };
 
-const useQuests = (resources: ResourceProduction, zones: Zones) => {
+const useQuests = (
+  resources: ResourceProduction,
+  zones: Zones,
+  onQuestComplete: (questId: string) => void
+) => {
   const [questRewards, setQuestRewards] = useState<number>(0);
   const [quests, setQuests] = useState<Quest[]>([]);
 
@@ -36,6 +40,7 @@ const useQuests = (resources: ResourceProduction, zones: Zones) => {
     };
 
     addQuest(quest);
+    return quest;
   }, [addQuest]);
 
   const checkQuests = useCallback(() => {
@@ -50,6 +55,8 @@ const useQuests = (resources: ResourceProduction, zones: Zones) => {
             resources[quest.criteria.target as ResourceNames];
           if ((resourceCount ?? 0) >= quest.criteria.amount) {
             setQuestRewards((prev) => prev + quest.reward);
+            onQuestComplete(quest.id);
+
             return { ...quest, completed: true };
           }
         }
@@ -57,7 +64,7 @@ const useQuests = (resources: ResourceProduction, zones: Zones) => {
         return quest;
       })
     );
-  }, [resources]);
+  }, [onQuestComplete, resources]);
 
   useEffect(() => {
     checkQuests();
@@ -66,9 +73,10 @@ const useQuests = (resources: ResourceProduction, zones: Zones) => {
   return useMemo(
     () => ({
       quests,
+      questRewards,
       addRandomQuest,
     }),
-    [quests, addRandomQuest]
+    [quests, questRewards, addRandomQuest]
   );
 };
 

@@ -114,7 +114,36 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     [tileResourceProduction, updateResourceCounts]
   );
 
-  return { cellValues, resources, tileResourceProduction, setCell };
+  const removeCell = useCallback(
+    (row: number, col: number) => {
+      setCellValues((prev) => {
+        const newCellValues = { ...prev };
+        delete newCellValues[`${row},${col}`];
+        return newCellValues;
+      });
+
+      setResources((prev) => {
+        const newResources = { ...prev };
+        const tileResource = tileResourceProduction[`${row},${col}`];
+        if (tileResource) {
+          newResources.wood! -= tileResource.wood || 0;
+          newResources.stone! -= tileResource.stone || 0;
+          newResources.food! -= tileResource.food || 0;
+          newResources.gold! -= tileResource.gold || 0;
+        }
+        return newResources;
+      });
+
+      setTileResourceProduction((prev) => {
+        const newTileResourceProduction = { ...prev };
+        delete newTileResourceProduction[`${row},${col}`];
+        return newTileResourceProduction;
+      });
+    },
+    [tileResourceProduction]
+  );
+
+  return { cellValues, resources, tileResourceProduction, setCell, removeCell };
 };
 
 export default useScoreTracker;

@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
-import { allTiles, Tile_TOXIC } from "../../constants/hexTiles";
+import { allTiles } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
+import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 
 const TOXIC_TILE_PROBABILITY = 0.3;
 
@@ -29,8 +30,17 @@ const GameBoard = ({
     { row: number; col: number }[]
   >([]);
 
-  const { cellValues, resources, tileResourceProduction, setCell } =
+  const { cellValues, resources, tileResourceProduction, setCell, removeCell } =
     useStatTracker({ rows, cols });
+
+  const {
+    toxicTiles,
+    addTile: addToxicTile,
+    removeTile: removeToxicTile,
+  } = useToxicTileTracker({
+    setCell,
+    removeCell,
+  });
 
   const [zones, setZones] = useState<Zones>({
     [TileSectionType.Forest]: [],
@@ -39,7 +49,19 @@ const GameBoard = ({
     [TileSectionType.City]: [],
     [TileSectionType.Plains]: [],
   });
-  const { quests, addRandomQuest } = useQuests(resources, zones);
+
+  const onQuestComplete = useCallback(
+    (questId: string) => {
+      removeToxicTile(toxicTiles.find((tile) => tile.questId === questId)!);
+    },
+    [removeToxicTile, toxicTiles]
+  );
+
+  const { quests, addRandomQuest } = useQuests(
+    resources,
+    zones,
+    onQuestComplete
+  );
 
   const [sectionsCounts, setSectionsCounts] = useState({
     [TileSectionType.City]: 0,
@@ -183,13 +205,21 @@ const GameBoard = ({
       const nearby = nearbyHexes(row, col, rows, cols);
       for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
         if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-          setCell(nearbyRow, nearbyCol, Tile_TOXIC);
+          const { id: questId } = addRandomQuest();
+          addToxicTile({
+            row: nearbyRow,
+            col: nearbyCol,
+            questId: questId,
+            spawnedTurn: currentTurn,
+            destructionTurn: null,
+          });
+          // setCell(nearbyRow, nearbyCol, Tile_TOXIC);
 
           return;
         }
       }
     },
-    [cellValues, cols, rows, setCell]
+    [addRandomQuest, addToxicTile, cellValues, cols, currentTurn, rows]
   );
 
   const updateSectionCounts = useCallback(
@@ -220,7 +250,6 @@ const GameBoard = ({
 
       if (Math.random() < TOXIC_TILE_PROBABILITY) {
         placeToxicHexOnNearbyFreeHex(row, col);
-        addRandomQuest();
       }
       setZonesAfterTilePlacement(row, col, newTile);
       onTurnChange();

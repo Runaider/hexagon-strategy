@@ -28,4 +28,13 @@ declare global {
     _: number;
     // isLocked: boolean;
   };
+
+  type ToxicTile = {
+    row: number;
+    col: number;
+    questId: string;
+    spawnedTurn: number;
+    destructionTurn: number | null;
+    // spreadInterval: number;
+  };
 }

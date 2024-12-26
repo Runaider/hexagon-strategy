@@ -61,6 +61,7 @@ const GameBoard = ({
 
   const { quests, addRandomQuest } = useQuests(
     resources,
+    tileResourceProduction,
     zones,
     onQuestComplete
   );

@@ -8,6 +8,9 @@ import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useStatTracker from "@/hooks/useStatTracker";
+import useQuests from "@/hooks/useQuests";
+
+const TOXIC_TILE_PROBABILITY = 0.3;
 
 const GameBoard = ({
   rows,
@@ -29,6 +32,15 @@ const GameBoard = ({
   const { cellValues, resources, tileResourceProduction, setCell } =
     useStatTracker({ rows, cols });
 
+  const [zones, setZones] = useState<Zones>({
+    [TileSectionType.Forest]: [],
+    [TileSectionType.Water]: [],
+    [TileSectionType.Mountains]: [],
+    [TileSectionType.City]: [],
+    [TileSectionType.Plains]: [],
+  });
+  const { quests, addRandomQuest } = useQuests(resources, zones);
+
   const [sectionsCounts, setSectionsCounts] = useState({
     [TileSectionType.City]: 0,
     [TileSectionType.Forest]: 0,
@@ -39,13 +51,6 @@ const GameBoard = ({
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
   const [upcomingTiles, setUpcomingTiles] = useState(shuffle([...allTiles]));
 
-  const [zones, setZones] = useState<Zones>({
-    [TileSectionType.Forest]: [],
-    [TileSectionType.Water]: [],
-    [TileSectionType.Mountains]: [],
-    [TileSectionType.City]: [],
-    [TileSectionType.Plains]: [],
-  });
   const [unlockedCells, setUnlockedCells] = useState<{
     [key: string]: boolean;
   }>({});
@@ -213,8 +218,9 @@ const GameBoard = ({
 
       setCell(row, col, newTile);
 
-      if (Math.random() < 0.1) {
+      if (Math.random() < TOXIC_TILE_PROBABILITY) {
         placeToxicHexOnNearbyFreeHex(row, col);
+        addRandomQuest();
       }
       setZonesAfterTilePlacement(row, col, newTile);
       onTurnChange();
@@ -357,7 +363,7 @@ const GameBoard = ({
         className="fixed rounded-md flex text-md text-black"
         style={{ top: "30px", left: "50%", transform: "translateX(-50%)" }}
       >
-        <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
+        <div className="flex border p-4 shadow-md bg-white rounded-md text-md">
           Forest: {sectionsCounts[TileSectionType.Forest]}
           <div className="w-4" />
           Mountains: {sectionsCounts[TileSectionType.Mountains]}
@@ -412,6 +418,26 @@ const GameBoard = ({
         <div className="w-4" />
         <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
           Score: {score}
+        </div>
+      </div>
+      {/* Quests */}
+      <div
+        className="fixed   rounded-md flex text-md text-black"
+        style={{ left: "30px", top: "50%", transform: "translateY(-50%)" }}
+      >
+        <div className="flex flex-col border p-4 shadow-md  bg-white rounded-md text-md">
+          Pending Quests:
+          {quests.map((quest, index) => (
+            <div
+              key={index}
+              className={classNames(
+                "ml-4",
+                quest.completed ? "line-through" : ""
+              )}
+            >
+              {quest.title}
+            </div>
+          ))}
         </div>
       </div>
       {/* zone numbers */}

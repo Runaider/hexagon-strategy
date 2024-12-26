@@ -8,8 +8,6 @@ type Props = {
   cols: number;
 };
 
-type ResourceNames = "wood" | "stone" | "food" | "gold" | "_";
-
 const Resources: { [key in TileSectionType]: ResourceNames } = {
   [TileSectionType.Forest]: "wood",
   [TileSectionType.Mountains]: "stone",
@@ -23,22 +21,13 @@ const Resources: { [key in TileSectionType]: ResourceNames } = {
 const useScoreTracker = ({ rows, cols }: Props) => {
   const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
 
-  const [resources, setResources] = useState({
+  const [resources, setResources] = useState<ResourceProduction>({
     wood: 0,
     stone: 0,
     food: 0,
     gold: 0,
     _: 0,
   });
-
-  type ResourceProduction = {
-    wood?: number;
-    stone?: number;
-    food?: number;
-    gold?: number;
-    _: number;
-    isLocked: boolean;
-  };
 
   const [tileResourceProduction, setTileResourceProduction] = useState<{
     [key: string]: ResourceProduction;
@@ -111,13 +100,13 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       setResources((prev) => {
         const newResources = { ...prev };
         Object.entries(tileResourceProduction).forEach(([, value]) => {
-          if (value.isLocked) {
-            return;
-          }
-          newResources.wood += value?.wood || 0;
-          newResources.stone += value?.stone || 0;
-          newResources.food += value?.food || 0;
-          newResources.gold += value?.gold || 0;
+          // if (value.isLocked) {
+          //   return;
+          // }
+          newResources.wood! += value?.wood || 0;
+          newResources.stone! += value?.stone || 0;
+          newResources.food! += value?.food || 0;
+          newResources.gold! += value?.gold || 0;
         });
         return newResources;
       });

@@ -1,7 +1,7 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
 import { cloneDeep } from "lodash";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 type Props = {
   rows: number;
@@ -143,7 +143,16 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     [tileResourceProduction]
   );
 
-  return { cellValues, resources, tileResourceProduction, setCell, removeCell };
+  return useMemo(
+    () => ({
+      cellValues,
+      resources,
+      tileResourceProduction,
+      setCell,
+      removeCell,
+    }),
+    [cellValues, resources, tileResourceProduction, setCell, removeCell]
+  );
 };
 
 export default useScoreTracker;

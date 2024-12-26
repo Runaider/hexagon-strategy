@@ -1,24 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Quest = {
-  id: string;
-  title: string;
-  criteria: {
-    type: "poses" | "gather" | "build";
-    target: ResourceNames;
-    amount: number;
-  };
-  description: string;
-  reward: number;
-  completed: boolean;
-};
-
 const useQuests = (
   resources: ResourceProduction,
   zones: Zones,
   onQuestComplete: (questId: string) => void
 ) => {
-  const [questRewards, setQuestRewards] = useState<number>(0);
+  // const [questRewards, setQuestRewards] = useState<number>(0);
   const [quests, setQuests] = useState<Quest[]>([]);
 
   const addQuest = useCallback((quest: Quest) => {
@@ -54,7 +41,7 @@ const useQuests = (
           const resourceCount =
             resources[quest.criteria.target as ResourceNames];
           if ((resourceCount ?? 0) >= quest.criteria.amount) {
-            setQuestRewards((prev) => prev + quest.reward);
+            // setQuestRewards((prev) => prev + quest.reward);
             onQuestComplete(quest.id);
 
             return { ...quest, completed: true };
@@ -73,10 +60,10 @@ const useQuests = (
   return useMemo(
     () => ({
       quests,
-      questRewards,
+      // questRewards,
       addRandomQuest,
     }),
-    [quests, questRewards, addRandomQuest]
+    [quests, addRandomQuest]
   );
 };
 

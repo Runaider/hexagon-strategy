@@ -1,5 +1,6 @@
 const calculateScoreFromGridData = (
-  zones: Zones
+  zones: Zones,
+  quests: Quest[]
 ): {
   score: number;
   scoreLog: string[];
@@ -15,6 +16,15 @@ const calculateScoreFromGridData = (
         `Adding score for ${Object.keys(zones).find(
           (key) => zones[key] === zone
         )} with ${hexes.hexes.length} hexes, ${zoneScore} points`
+      );
+    }
+  }
+
+  for (const quest of quests) {
+    if (quest.completed) {
+      score += quest.reward;
+      scoreLog.push(
+        `Adding score for quest "${quest.title}", ${quest.reward} points`
       );
     }
   }

@@ -12,6 +12,8 @@ import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 
 const TOXIC_TILE_PROBABILITY = 0.3;
+const MAX_TURNS = 10;
+const LAST_TURN_TO_SPAWN_TOXIC_TILE = MAX_TURNS - 3;
 
 const GameBoard = ({
   rows,
@@ -205,16 +207,16 @@ const GameBoard = ({
       const nearby = nearbyHexes(row, col, rows, cols);
       for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
         if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-          const { id: questId } = addRandomQuest();
-          addToxicTile({
-            row: nearbyRow,
-            col: nearbyCol,
-            questId: questId,
-            spawnedTurn: currentTurn,
-            destructionTurn: null,
-          });
-          // setCell(nearbyRow, nearbyCol, Tile_TOXIC);
-
+          if (currentTurn <= LAST_TURN_TO_SPAWN_TOXIC_TILE) {
+            const { id: questId } = addRandomQuest();
+            addToxicTile({
+              row: nearbyRow,
+              col: nearbyCol,
+              questId: questId,
+              spawnedTurn: currentTurn,
+              destructionTurn: currentTurn + 3,
+            });
+          }
           return;
         }
       }
@@ -315,13 +317,13 @@ const GameBoard = ({
   }, [handleKeyDown]);
 
   useEffect(() => {
-    if (currentTurn == 10) {
-      const { score, scoreLog } = calculateScoreFromGridData(zones);
-      console.log(scoreLog);
+    if (currentTurn == MAX_TURNS) {
+      const { score, scoreLog } = calculateScoreFromGridData(zones, quests);
+      console.log("scoreLog", scoreLog);
       alert(`Game over! Your score is ${score}`);
       setScore(score);
     }
-  }, [cellValues, currentTurn, isGameOver, zones]);
+  }, [cellValues, currentTurn, isGameOver, quests, zones]);
 
   return (
     <div>

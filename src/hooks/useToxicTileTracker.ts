@@ -1,5 +1,5 @@
 import { Tile } from "@/models/Tile";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Tile_TOXIC } from "@/constants/hexTiles";
 
 type Props = {
@@ -10,21 +10,30 @@ type Props = {
 const useToxicTileTracker = ({ setCell, removeCell }: Props) => {
   const [toxicTiles, setToxicTiles] = useState<ToxicTile[]>([]);
 
-  const addTile = (tile: ToxicTile) => {
-    setToxicTiles([...toxicTiles, tile]);
-    setCell(tile.row, tile.col, Tile_TOXIC);
-    return tile;
-  };
+  const addTile = useCallback(
+    (tile: ToxicTile) => {
+      setToxicTiles([...toxicTiles, tile]);
+      setCell(tile.row, tile.col, Tile_TOXIC);
+      return tile;
+    },
+    [toxicTiles, setCell]
+  );
 
-  const removeTile = (tile: ToxicTile) => {
-    if (!toxicTiles.includes(tile)) {
-      return;
-    }
-    setToxicTiles(toxicTiles.filter((t) => t !== tile));
-    removeCell(tile.row, tile.col);
-  };
+  const removeTile = useCallback(
+    (tile: ToxicTile) => {
+      if (!toxicTiles.includes(tile)) {
+        return;
+      }
+      setToxicTiles(toxicTiles.filter((t) => t !== tile));
+      removeCell(tile.row, tile.col);
+    },
+    [toxicTiles, removeCell]
+  );
 
-  return { toxicTiles, addTile, removeTile };
+  return useMemo(
+    () => ({ toxicTiles, addTile, removeTile }),
+    [toxicTiles, addTile, removeTile]
+  );
 };
 
 export default useToxicTileTracker;

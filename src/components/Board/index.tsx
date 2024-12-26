@@ -34,7 +34,7 @@ const GameBoard = ({
 
   const { cellValues, resources, tileResourceProduction, setCell, removeCell } =
     useStatTracker({ rows, cols });
-
+  console.log("tileResourceProduction in board", tileResourceProduction);
   const {
     toxicTiles,
     addTile: addToxicTile,

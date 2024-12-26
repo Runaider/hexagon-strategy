@@ -60,6 +60,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
         const [connectedRow, connectedCol] = connectedHex;
         const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
         if (!connectedTile) {
+          console.info("No connected tile");
           return;
         }
         const connectedSide = connectedTile.getSides()[(index + 3) % 6];
@@ -79,9 +80,10 @@ const useScoreTracker = ({ rows, cols }: Props) => {
                 Resources[side.type as TileSectionType]
               ] || 0) + 0.5,
           };
+          console.log("Adding 0.5 to", side.type, tileResources);
         }
       });
-
+      console.log("Setting tile resource production", tileResources);
       setTileResourceProduction(tileResources);
     },
     [cellValues, cols, rows, tileResourceProduction]
@@ -95,6 +97,10 @@ const useScoreTracker = ({ rows, cols }: Props) => {
         return newCellValues;
       });
 
+      if (tile.sides[0].type === TileSectionType.Toxic) {
+        return;
+      }
+      // console.log("Setting cell", row, col, tile);
       updateResourceCounts(row, col, tile);
 
       setResources((prev) => {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 const generatePosesQuest = (
   currentResources: ResourceProduction,
-  tileResourceProduction: ResourceProduction
+  tileResourceProduction: { [key: string]: ResourceProduction }
 ) => {
   const expectedTurnsToComplete = 4;
   const minimalAmount = 5;
@@ -10,10 +10,13 @@ const generatePosesQuest = (
   const resourceNames = Object.keys(currentResources) as ResourceNames[];
   const randomResourceName =
     resourceNames[Math.floor(Math.random() * (resourceNames.length - 1))];
+  const resourceProduction = Object.values(tileResourceProduction).reduce(
+    (acc, val) => acc + (val[randomResourceName] || 0),
+    0
+  );
   const amountBasedOnResources =
     (currentResources[randomResourceName] || 0) +
-      (tileResourceProduction[randomResourceName] || 1) *
-        expectedTurnsToComplete || minimalAmount;
+      (resourceProduction || 0) * expectedTurnsToComplete || minimalAmount;
 
   const quest: Quest = {
     id: Math.random().toString(),
@@ -32,11 +35,10 @@ const generatePosesQuest = (
 
 const useQuests = (
   resources: ResourceProduction,
-  tileResourceProduction: ResourceProduction,
+  tileResourceProduction: { [key: string]: ResourceProduction },
   zones: Zones,
   onQuestComplete: (questId: string) => void
 ) => {
-  // const [questRewards, setQuestRewards] = useState<number>(0);
   const [quests, setQuests] = useState<Quest[]>([]);
 
   const addQuest = useCallback((quest: Quest) => {
@@ -44,19 +46,6 @@ const useQuests = (
   }, []);
 
   const addRandomQuest = useCallback(() => {
-    // const quest: Quest = {
-    //   id: Math.random().toString(),
-    //   title: "Poses 10 wood",
-    //   criteria: {
-    //     type: "poses",
-    //     target: "wood",
-    //     amount: 10,
-    //   },
-    //   description: "Poses 10 wood",
-    //   reward: 100,
-    //   completed: false,
-    // };
-
     const quest = generatePosesQuest(resources, tileResourceProduction);
 
     addQuest(quest);
@@ -74,7 +63,6 @@ const useQuests = (
           const resourceCount =
             resources[quest.criteria.target as ResourceNames];
           if ((resourceCount ?? 0) >= quest.criteria.amount) {
-            // setQuestRewards((prev) => prev + quest.reward);
             onQuestComplete(quest.id);
 
             return { ...quest, completed: true };
@@ -93,7 +81,6 @@ const useQuests = (
   return useMemo(
     () => ({
       quests,
-      // questRewards,
       addRandomQuest,
     }),
     [quests, addRandomQuest]

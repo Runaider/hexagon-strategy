@@ -12,8 +12,33 @@ import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 
 const TOXIC_TILE_PROBABILITY = 0.3;
-const MAX_TURNS = 10;
+const MAX_TURNS = 20;
 const LAST_TURN_TO_SPAWN_TOXIC_TILE = MAX_TURNS - 3;
+const PREVIEW_TILE_COUNT = 3;
+
+const ACTION_PRICES = {
+  rotate: {
+    wood: 0,
+    stone: 1,
+    food: 0,
+    gold: 1,
+    _: 0,
+  },
+  changeUpcomingHex: {
+    wood: 1,
+    stone: 0,
+    food: 1,
+    gold: 0,
+    _: 0,
+  },
+  redrawUpcomingHexes: {
+    wood: 1,
+    stone: 1,
+    food: 1,
+    gold: 1,
+    _: 0,
+  },
+};
 
 const GameBoard = ({
   rows,
@@ -32,9 +57,16 @@ const GameBoard = ({
     { row: number; col: number }[]
   >([]);
 
-  const { cellValues, resources, tileResourceProduction, setCell, removeCell } =
-    useStatTracker({ rows, cols });
-  console.log("tileResourceProduction in board", tileResourceProduction);
+  const {
+    cellValues,
+    resources,
+    tileResourceProduction,
+    setCell,
+    removeCell,
+    canPriceBePaid,
+    payPrice,
+  } = useStatTracker({ rows, cols });
+
   const {
     toxicTiles,
     addTile: addToxicTile,
@@ -255,6 +287,7 @@ const GameBoard = ({
         placeToxicHexOnNearbyFreeHex(row, col);
       }
       setZonesAfterTilePlacement(row, col, newTile);
+      setNextTileIndex(0);
       onTurnChange();
     },
     [
@@ -268,6 +301,25 @@ const GameBoard = ({
       updateSectionCounts,
     ]
   );
+
+  const onUpcomingTileClick = useCallback(
+    (index: number) => {
+      if (!canPriceBePaid(ACTION_PRICES.changeUpcomingHex)) {
+        return;
+      }
+      payPrice(ACTION_PRICES.changeUpcomingHex);
+      setNextTileIndex(index);
+    },
+    [canPriceBePaid, payPrice]
+  );
+
+  const onShuffleClick = useCallback(() => {
+    if (!canPriceBePaid(ACTION_PRICES.redrawUpcomingHexes)) {
+      return;
+    }
+    payPrice(ACTION_PRICES.redrawUpcomingHexes);
+    setUpcomingTiles(shuffle(upcomingTiles));
+  }, [canPriceBePaid, payPrice, upcomingTiles]);
 
   // on first render place the core tile in the center
   useEffect(() => {
@@ -574,7 +626,13 @@ const GameBoard = ({
         className="fixed bg-white shadow-md border p-4 rounded-md flex items-center justify-center"
         style={{ bottom: "30px", left: "50%", transform: "translateX(-50%)" }}
       >
-        {upcomingTiles.slice(0, 5).map((tile, index) => (
+        <div
+          className="absolute right-[-42px] top-[-12px] text-lg font-bold bg-indigo-600 px-2 h-8 rounded-full flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
+          onClick={onShuffleClick}
+        >
+          Shuffle
+        </div>
+        {upcomingTiles.slice(0, PREVIEW_TILE_COUNT).map((tile, index) => (
           <div key={index} className="flex">
             <div className="w-4 " />
             <div
@@ -587,7 +645,7 @@ const GameBoard = ({
                 tile={tile}
                 hexSize={hexSize}
                 muted={false}
-                onClick={() => setNextTileIndex(index)}
+                onClick={() => onUpcomingTileClick(index)}
               />
             </div>
           </div>

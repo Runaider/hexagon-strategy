@@ -22,10 +22,10 @@ const useScoreTracker = ({ rows, cols }: Props) => {
   const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
 
   const [resources, setResources] = useState<ResourceProduction>({
-    wood: 0,
-    stone: 0,
-    food: 0,
-    gold: 0,
+    wood: 10,
+    stone: 10,
+    food: 10,
+    gold: 10,
     _: 0,
   });
 
@@ -149,15 +149,51 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     [tileResourceProduction]
   );
 
+  const canPriceBePaid = useCallback(
+    (price: ResourceProduction) => {
+      return (
+        (resources.wood || 0) >= (price.wood || 0) &&
+        (resources.stone || 0) >= (price.stone || 0) &&
+        (resources.food || 0) >= (price.food || 0) &&
+        (resources.gold || 0) >= (price.gold || 0)
+      );
+    },
+    [resources]
+  );
+
+  const payPrice = useCallback(
+    (price: ResourceProduction) => {
+      setResources((prev) => {
+        const newResources = { ...prev };
+        newResources.wood! -= price.wood || 0;
+        newResources.stone! -= price.stone || 0;
+        newResources.food! -= price.food || 0;
+        newResources.gold! -= price.gold || 0;
+        return newResources;
+      });
+    },
+    [setResources]
+  );
+
   return useMemo(
     () => ({
       cellValues,
       resources,
       tileResourceProduction,
+      payPrice,
+      canPriceBePaid,
       setCell,
       removeCell,
     }),
-    [cellValues, resources, tileResourceProduction, setCell, removeCell]
+    [
+      cellValues,
+      resources,
+      tileResourceProduction,
+      payPrice,
+      canPriceBePaid,
+      setCell,
+      removeCell,
+    ]
   );
 };
 

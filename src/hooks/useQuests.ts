@@ -10,13 +10,17 @@ const generatePosesQuest = (
   const resourceNames = Object.keys(currentResources) as ResourceNames[];
   const randomResourceName =
     resourceNames[Math.floor(Math.random() * (resourceNames.length - 1))];
+
   const resourceProduction = Object.values(tileResourceProduction).reduce(
     (acc, val) => acc + (val[randomResourceName] || 0),
     0
   );
+
+  const currentResourceAmount = currentResources[randomResourceName] || 0;
+
   const amountBasedOnResources =
-    (currentResources[randomResourceName] || 0) +
-      (resourceProduction || 0) * expectedTurnsToComplete || minimalAmount;
+    currentResourceAmount +
+      (resourceProduction || 1) * expectedTurnsToComplete || minimalAmount;
 
   const quest: Quest = {
     id: Math.random().toString(),

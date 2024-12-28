@@ -1,0 +1,8 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - nvm use 22.12.0
+        - npm install
+        - npm run build

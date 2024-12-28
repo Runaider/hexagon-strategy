@@ -3,7 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm use 22.12.0
+        - nvm install 22.12.0
         - yarn install
     build:
       commands:
@@ -20,7 +20,7 @@ backend:
   phases:
     preBuild:
       commands:
-        - nvm use 22.12.0
+        - nvm install 22.12.0
     build:
       commands:
         - yarn install

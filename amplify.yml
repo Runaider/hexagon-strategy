@@ -1,8 +1,8 @@
 version: 1
 backend:
-  # preBuild:
-  #   commands:
-  #     - nvm install 22.12.0
+  preBuild:
+    commands:
+      - nvm install 22.12.0
   phases:
     build:
       commands:

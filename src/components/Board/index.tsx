@@ -10,6 +10,7 @@ import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
+import useAppConfig from "@/hooks/useAppConfig";
 
 const TOXIC_TILE_PROBABILITY = 0.3;
 const MAX_TURNS = 20;
@@ -49,6 +50,8 @@ const GameBoard = ({
   cols: number;
   hexSize: number;
 }) => {
+  const config = useAppConfig();
+  console.log("config, loading, error", config);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [nextTileIndex, setNextTileIndex] = useState(0);
@@ -416,7 +419,7 @@ const GameBoard = ({
                   tile={cellValues[`${rowIndex},${colIndex}`]}
                   hexSize={hexSize}
                   muted={false}
-                  onClick={function (): void {
+                  onClick={function(): void {
                     console.log("Filed tile clicked", rowIndex, colIndex);
                   }}
                 />

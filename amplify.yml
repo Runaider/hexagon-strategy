@@ -1,21 +1,4 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - nvm install 22.12.0
-        - yarn install
-    build:
-      commands:
-        - yarn run build
-  artifacts:
-    baseDirectory: dist
-    files:
-      - "**/*"
-  cache:
-    paths:
-      - node_modules/**/*
-
 backend:
   phases:
     preBuild:
@@ -24,6 +7,23 @@ backend:
     build:
       commands:
         - yarn install
+        - amplifyPush --simple
+  artifacts:
+    baseDirectory: dist
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 22.12.0
+        - yarn install
+    build:
+      commands:
         - yarn run build
   artifacts:
     baseDirectory: dist

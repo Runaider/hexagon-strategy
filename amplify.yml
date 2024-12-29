@@ -1,9 +1,9 @@
 version: 1
 backend:
-  preBuild:
-    commands:
-      - nvm install 22.12.0
   phases:
+    preBuild:
+      commands:
+        - nvm install 22.12.0
     build:
       commands:
         - yarn install --immutable
@@ -13,9 +13,9 @@ frontend:
     preBuild:
       commands:
         - nvm install 22.12.0
-      build:
-        commands:
-          - yarn run build
+    build:
+      commands:
+        - yarn run build
   artifacts:
     baseDirectory: dist
     files:

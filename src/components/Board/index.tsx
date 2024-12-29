@@ -10,36 +10,38 @@ import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
-import useAppConfig from "@/hooks/useAppConfig";
+import { useAppConfig } from "@/contexts/appConfig";
 
-const TOXIC_TILE_PROBABILITY = 0.3;
-const MAX_TURNS = 20;
-const LAST_TURN_TO_SPAWN_TOXIC_TILE = MAX_TURNS - 3;
-const PREVIEW_TILE_COUNT = 3;
+const TOXIC_TILE_BUFFER = 3;
 
-const ACTION_PRICES = {
-  rotate: {
-    wood: 0,
-    stone: 1,
-    food: 0,
-    gold: 1,
-    _: 0,
-  },
-  changeUpcomingHex: {
-    wood: 1,
-    stone: 0,
-    food: 1,
-    gold: 0,
-    _: 0,
-  },
-  redrawUpcomingHexes: {
-    wood: 1,
-    stone: 1,
-    food: 1,
-    gold: 1,
-    _: 0,
-  },
-};
+// const TOXIC_TILE_PROBABILITY = 0.3;
+// const MAX_TURNS = 20;
+// const LAST_TURN_TO_SPAWN_TOXIC_TILE = MAX_TURNS - 3;
+// const PREVIEW_TILE_COUNT = 3;
+
+// const ACTION_PRICES = {
+//   rotate: {
+//     wood: 0,
+//     stone: 1,
+//     food: 0,
+//     gold: 1,
+//     _: 0,
+//   },
+//   changeUpcomingHex: {
+//     wood: 1,
+//     stone: 0,
+//     food: 1,
+//     gold: 0,
+//     _: 0,
+//   },
+//   redrawUpcomingHexes: {
+//     wood: 1,
+//     stone: 1,
+//     food: 1,
+//     gold: 1,
+//     _: 0,
+//   },
+// };
 
 const GameBoard = ({
   rows,
@@ -50,8 +52,7 @@ const GameBoard = ({
   cols: number;
   hexSize: number;
 }) => {
-  const config = useAppConfig();
-  console.log("config, loading, error", config);
+  const { config } = useAppConfig();
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [nextTileIndex, setNextTileIndex] = useState(0);
@@ -59,6 +60,8 @@ const GameBoard = ({
   const [highlightedHexes, setHighlightedHexes] = useState<
     { row: number; col: number }[]
   >([]);
+
+  console.log("Config", config);
 
   const {
     cellValues,
@@ -243,7 +246,7 @@ const GameBoard = ({
       const nearby = nearbyHexes(row, col, rows, cols);
       for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
         if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-          if (currentTurn <= LAST_TURN_TO_SPAWN_TOXIC_TILE) {
+          if (currentTurn <= config.maxTurns! - TOXIC_TILE_BUFFER) {
             const { id: questId } = addRandomQuest();
             addToxicTile({
               row: nearbyRow,
@@ -286,7 +289,7 @@ const GameBoard = ({
 
       setCell(row, col, newTile);
 
-      if (Math.random() < TOXIC_TILE_PROBABILITY) {
+      if (Math.random() < config.toxicTileProbability!) {
         placeToxicHexOnNearbyFreeHex(row, col);
       }
       setZonesAfterTilePlacement(row, col, newTile);
@@ -307,20 +310,20 @@ const GameBoard = ({
 
   const onUpcomingTileClick = useCallback(
     (index: number) => {
-      if (!canPriceBePaid(ACTION_PRICES.changeUpcomingHex)) {
+      if (!canPriceBePaid(config.actionPrices!.changeUpcomingHex)) {
         return;
       }
-      payPrice(ACTION_PRICES.changeUpcomingHex);
+      payPrice(config.actionPrices!.changeUpcomingHex);
       setNextTileIndex(index);
     },
     [canPriceBePaid, payPrice]
   );
 
   const onShuffleClick = useCallback(() => {
-    if (!canPriceBePaid(ACTION_PRICES.redrawUpcomingHexes)) {
+    if (!canPriceBePaid(config.actionPrices!.redrawUpcomingHexes)) {
       return;
     }
-    payPrice(ACTION_PRICES.redrawUpcomingHexes);
+    payPrice(config.actionPrices!.redrawUpcomingHexes);
     setUpcomingTiles(shuffle(upcomingTiles));
   }, [canPriceBePaid, payPrice, upcomingTiles]);
 
@@ -373,7 +376,7 @@ const GameBoard = ({
   }, [handleKeyDown]);
 
   useEffect(() => {
-    if (currentTurn == MAX_TURNS) {
+    if (currentTurn == config.maxTurns) {
       const { score, scoreLog } = calculateScoreFromGridData(zones, quests);
       console.log("scoreLog", scoreLog);
       alert(`Game over! Your score is ${score}`);
@@ -635,7 +638,7 @@ const GameBoard = ({
         >
           Shuffle
         </div>
-        {upcomingTiles.slice(0, PREVIEW_TILE_COUNT).map((tile, index) => (
+        {upcomingTiles.slice(0, config.previewTileCount!).map((tile, index) => (
           <div key={index} className="flex">
             <div className="w-4 " />
             <div

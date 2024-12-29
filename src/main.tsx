@@ -5,11 +5,14 @@ import GameBoard from "@/components/Board";
 
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
+import { AppConfigProvider } from "./contexts/appConfig";
 
 Amplify.configure(outputs);
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-  <GameBoard rows={25} cols={25} hexSize={50} />
+  <AppConfigProvider>
+    <GameBoard rows={25} cols={25} hexSize={50} />
+  </AppConfigProvider>
   // </StrictMode>
 );

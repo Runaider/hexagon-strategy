@@ -162,6 +162,29 @@ const Tile_FFFWWW = new Tile([
   TileSectionType.Water,
 ]);
 
+const Tile_FFPPPP = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+  TileSectionType.Plains,
+]);
+
+import FFPPPP_r0 from "../../assets/ffpppp/FFPPPP_r0.png";
+import FFPPPP_r1 from "../../assets/ffpppp/FFPPPP_r5.png";
+import FFPPPP_r2 from "../../assets/ffpppp/FFPPPP_r4.png";
+import FFPPPP_r3 from "../../assets/ffpppp/FFPPPP_r3.png";
+import FFPPPP_r4 from "../../assets/ffpppp/FFPPPP_r2.png";
+import FFPPPP_r5 from "../../assets/ffpppp/FFPPPP_r1.png";
+
+Tile_FFPPPP.sides[0].img = FFPPPP_r0;
+Tile_FFPPPP.sides[1].img = FFPPPP_r1;
+Tile_FFPPPP.sides[2].img = FFPPPP_r2;
+Tile_FFPPPP.sides[3].img = FFPPPP_r3;
+Tile_FFPPPP.sides[4].img = FFPPPP_r4;
+Tile_FFPPPP.sides[5].img = FFPPPP_r5;
+
 const Tile_FFFPPP = new Tile([
   TileSectionType.Forest,
   TileSectionType.Forest,
@@ -496,6 +519,7 @@ const allTiles = [
 
 export {
   allTiles,
+  Tile_FFPPPP,
   Tile_TOXIC,
   Tile_FFFCCC,
   Tile_FFFFFF,

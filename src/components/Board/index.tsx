@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
-import { allTiles } from "../../constants/hexTiles";
+import { allTiles, Tile_FFPPPP } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
@@ -11,37 +11,10 @@ import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { useAppConfig } from "@/contexts/appConfig";
+import StatTag from "../StatTag";
+import StatsBar from "../StatsBar";
 
 const TOXIC_TILE_BUFFER = 3;
-
-// const TOXIC_TILE_PROBABILITY = 0.3;
-// const MAX_TURNS = 20;
-// const LAST_TURN_TO_SPAWN_TOXIC_TILE = MAX_TURNS - 3;
-// const PREVIEW_TILE_COUNT = 3;
-
-// const ACTION_PRICES = {
-//   rotate: {
-//     wood: 0,
-//     stone: 1,
-//     food: 0,
-//     gold: 1,
-//     _: 0,
-//   },
-//   changeUpcomingHex: {
-//     wood: 1,
-//     stone: 0,
-//     food: 1,
-//     gold: 0,
-//     _: 0,
-//   },
-//   redrawUpcomingHexes: {
-//     wood: 1,
-//     stone: 1,
-//     food: 1,
-//     gold: 1,
-//     _: 0,
-//   },
-// };
 
 const GameBoard = ({
   rows,
@@ -112,7 +85,10 @@ const GameBoard = ({
     [TileSectionType.Water]: 0,
   });
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
-  const [upcomingTiles, setUpcomingTiles] = useState(shuffle([...allTiles]));
+  const [upcomingTiles, setUpcomingTiles] = useState([
+    Tile_FFPPPP,
+    ...shuffle([...allTiles]),
+  ]);
 
   const [unlockedCells, setUnlockedCells] = useState<{
     [key: string]: boolean;
@@ -451,64 +427,9 @@ const GameBoard = ({
       {/* resource counts */}
       <div
         className="fixed rounded-md flex text-md text-black"
-        style={{ top: "30px", left: "50%", transform: "translateX(-50%)" }}
+        style={{ top: "20px", left: "50%", transform: "translateX(-50%)" }}
       >
-        <div className="flex border p-4 shadow-md bg-white rounded-md text-md">
-          Forest: {sectionsCounts[TileSectionType.Forest]}
-          <div className="w-4" />
-          Mountains: {sectionsCounts[TileSectionType.Mountains]}
-          <div className="w-4" />
-          Plains: {sectionsCounts[TileSectionType.Plains]}
-          <div className="w-4" />
-          Water: {sectionsCounts[TileSectionType.Water]}
-          <div className="w-4" />
-          City: {sectionsCounts[TileSectionType.City]}
-        </div>
-        <div className="w-4" />
-        <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
-          {/* Wood +{resourcesPerTurn.wood}: {recources.wood}
-          <div className="w-4" />
-          Stone +{resourcesPerTurn.stone}: {recources.stone}
-          <div className="w-4" />
-          Food +{resourcesPerTurn.food}: {recources.food}
-          <div className="w-4" />
-          Gold +{resourcesPerTurn.gold}: {recources.gold} */}
-          Wood +
-          {Object.values(tileResourceProduction).reduce(
-            (acc, curr) => acc + (curr?.wood || 0),
-            0
-          )}
-          : {resources?.wood || 0}
-          <div className="w-4" />
-          Stone +{" "}
-          {Object.values(tileResourceProduction).reduce(
-            (acc, curr) => acc + (curr?.stone || 0),
-            0
-          )}
-          : {resources?.stone || 0}
-          <div className="w-4" />
-          Food +{" "}
-          {Object.values(tileResourceProduction).reduce(
-            (acc, curr) => acc + (curr?.food || 0),
-            0
-          )}
-          : {resources?.food || 0}
-          <div className="w-4" />
-          Gold +{" "}
-          {Object.values(tileResourceProduction).reduce(
-            (acc, curr) => acc + (curr?.gold || 0),
-            0
-          )}{" "}
-          : {resources?.gold || 0}
-        </div>
-        <div className="w-4" />
-        <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
-          Turn: {currentTurn}
-        </div>
-        <div className="w-4" />
-        <div className="flex border p-4 shadow-md  bg-white rounded-md text-md">
-          Score: {score}
-        </div>
+        <StatsBar />
       </div>
       {/* Quests */}
       <div

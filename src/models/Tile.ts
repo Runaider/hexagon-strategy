@@ -22,11 +22,13 @@ type TileSide = {
   type: TileSectionType;
   sideNumber: number;
   color: string;
+  img?: string;
 };
 
 class Tile {
   public sides: TileSide[] = [];
   public rotation = 0;
+
   constructor(sections: TileSectionType[]) {
     this.sides = sections.map(
       (section, index) =>
@@ -43,7 +45,7 @@ class Tile {
     for (let i = 0; i < this.rotation; i++) {
       rotatedSides.unshift(rotatedSides.pop() as TileSide);
     }
-
+    console.log("rotatedSides", rotatedSides);
     return rotatedSides;
   }
 

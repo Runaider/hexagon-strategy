@@ -13,5 +13,19 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        ".clipped-corner-medium": {
+          clipPath:
+            "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",
+        },
+        ".clipped-corner-small": {
+          clipPath:
+            "polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px)",
+        },
+      };
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
 };

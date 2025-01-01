@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @layer utilities {
+  .custom-container {
+    clip-path: polygon(5% 0%, 95% 0%, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0% 85%, 0% 15%);
+  }
+} */
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

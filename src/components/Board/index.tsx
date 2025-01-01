@@ -423,7 +423,12 @@ const GameBoard = ({
         className="fixed rounded-md flex text-md text-black"
         style={{ top: "20px", left: "50%", transform: "translateX(-50%)" }}
       >
-        <StatsBar />
+        <StatsBar
+          wood={resources.wood}
+          stone={resources.stone}
+          food={resources.food}
+          money={resources.gold}
+        />
       </div>
       {/* Quests */}
       <div

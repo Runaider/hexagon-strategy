@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
-import { allTiles, Tile_FFPPPP } from "../../constants/hexTiles";
+import { allTiles, Tile_CASTLE } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { cloneDeep, shuffle } from "lodash";
@@ -85,26 +85,11 @@ const GameBoard = ({
     [TileSectionType.Water]: 0,
   });
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
-  const [upcomingTiles, setUpcomingTiles] = useState([
-    Tile_FFPPPP,
-    ...shuffle([...allTiles]),
-  ]);
+  const [upcomingTiles, setUpcomingTiles] = useState(shuffle([...allTiles]));
 
   const [unlockedCells, setUnlockedCells] = useState<{
     [key: string]: boolean;
   }>({});
-  const coreTile = useMemo(
-    () =>
-      new Tile([
-        TileSectionType.Castle,
-        TileSectionType.Castle,
-        TileSectionType.Castle,
-        TileSectionType.Castle,
-        TileSectionType.Castle,
-        TileSectionType.Castle,
-      ]),
-    []
-  );
 
   const hexWidth = Math.sqrt(3) * hexSize; // Width of each hexagon
   const hexHeight = 2 * hexSize; // Height of each hexagon
@@ -236,7 +221,15 @@ const GameBoard = ({
         }
       }
     },
-    [addRandomQuest, addToxicTile, cellValues, cols, currentTurn, rows]
+    [
+      addRandomQuest,
+      addToxicTile,
+      cellValues,
+      cols,
+      config.maxTurns,
+      currentTurn,
+      rows,
+    ]
   );
 
   const updateSectionCounts = useCallback(
@@ -273,6 +266,7 @@ const GameBoard = ({
       onTurnChange();
     },
     [
+      config.toxicTileProbability,
       nextTileIndex,
       onTurnChange,
       placeToxicHexOnNearbyFreeHex,
@@ -292,7 +286,7 @@ const GameBoard = ({
       payPrice(config.actionPrices!.changeUpcomingHex);
       setNextTileIndex(index);
     },
-    [canPriceBePaid, payPrice]
+    [canPriceBePaid, config.actionPrices, payPrice]
   );
 
   const onShuffleClick = useCallback(() => {
@@ -301,7 +295,7 @@ const GameBoard = ({
     }
     payPrice(config.actionPrices!.redrawUpcomingHexes);
     setUpcomingTiles(shuffle(upcomingTiles));
-  }, [canPriceBePaid, payPrice, upcomingTiles]);
+  }, [canPriceBePaid, config.actionPrices, payPrice, upcomingTiles]);
 
   // on first render place the core tile in the center
   useEffect(() => {
@@ -312,9 +306,9 @@ const GameBoard = ({
     const centerRow = Math.floor(rows / 2);
     const centerCol = Math.floor(cols / 2);
     unlockHexesNearClickedHex(centerRow, centerCol);
-    setCell(centerRow, centerCol, coreTile);
+    setCell(centerRow, centerCol, Tile_CASTLE);
   }, [
-    coreTile,
+    // coreTile,
     cols,
     rows,
     isFirstTilePlaced,

@@ -45,7 +45,7 @@ class Tile {
     for (let i = 0; i < this.rotation; i++) {
       rotatedSides.unshift(rotatedSides.pop() as TileSide);
     }
-    console.log("rotatedSides", rotatedSides);
+    // console.log("rotatedSides", rotatedSides);
     return rotatedSides;
   }
 

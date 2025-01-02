@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { Tile, TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
-import { nearbyHexes, getHexConnectedToSide } from "../../utils/nearbyHexes";
+import { nearbyHexes } from "../../utils/nearbyHexes";
 import { allTiles, Tile_CASTLE } from "../../constants/hexTiles";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
-import { cloneDeep, shuffle } from "lodash";
+import { shuffle } from "lodash";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { useAppConfig } from "@/contexts/appConfig";
-import StatTag from "../StatTag";
 import StatsBar from "../StatsBar";
+import useZoneTracker from "@/hooks/useZoneTracker";
 
 const TOXIC_TILE_BUFFER = 3;
 
@@ -55,12 +55,9 @@ const GameBoard = ({
     removeCell,
   });
 
-  const [zones, setZones] = useState<Zones>({
-    [TileSectionType.Forest]: [],
-    [TileSectionType.Water]: [],
-    [TileSectionType.Mountains]: [],
-    [TileSectionType.City]: [],
-    [TileSectionType.Plains]: [],
+  const { zones, setZones } = useZoneTracker({
+    rows,
+    cols,
   });
 
   const onQuestComplete = useCallback(
@@ -97,91 +94,6 @@ const GameBoard = ({
   const yOffset = (3 / 4) * hexHeight; // Vertical distance between rows
 
   const grid = [];
-
-  const setZonesAfterTilePlacement = useCallback(
-    (row: number, col: number, tile: Tile) => {
-      const tileSides = tile.getSides();
-      const newZones = cloneDeep(zones);
-      tileSides.forEach((side, index) => {
-        const connectedHex = getHexConnectedToSide(row, col, rows, cols, index);
-        if (!connectedHex) {
-          return;
-        }
-        const [connectedRow, connectedCol] = connectedHex;
-        const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
-        if (!connectedTile) {
-          return;
-        }
-        const connectedSide = connectedTile.getSides()[(index + 3) % 6];
-
-        const isConnectedSideSameType = connectedSide.type === side.type;
-        if (!isConnectedSideSameType) {
-          return;
-        }
-
-        const isConnectedSideInZone = newZones[side.type].some((zone) =>
-          zone.hexes.some(
-            (hex) => hex.row === connectedRow && hex.col === connectedCol
-          )
-        );
-        const isSideAlreadyInZone = newZones[side.type].some((zone) =>
-          zone.hexes.some((hex) => hex.row === row && hex.col === col)
-        );
-        if (isConnectedSideInZone) {
-          // add the current hex to the zone
-          const zone = newZones[side.type].find((zone) =>
-            zone.hexes.some(
-              (hex) => hex.row === connectedRow && hex.col === connectedCol
-            )
-          );
-          if (!zone) {
-            console.error("Zone not found");
-            return;
-          }
-          zone.hexes.push({
-            row,
-            col,
-            sides: tileSides.filter((_) => _.type == side.type),
-          });
-        } else if (isSideAlreadyInZone && !isConnectedSideInZone) {
-          // add the connected hex to the zone
-          const zone = newZones[side.type].find((zone) =>
-            zone.hexes.some((hex) => hex.row === row && hex.col === col)
-          );
-          if (!zone) {
-            console.error("Zone not found");
-            return;
-          }
-          zone.hexes.push({
-            row: connectedRow,
-            col: connectedCol,
-            sides: connectedTile.getSides().filter((_) => _.type == side.type),
-          });
-        } else {
-          // create a new zone
-          newZones[side.type].push({
-            hexes: [
-              {
-                row: connectedRow,
-                col: connectedCol,
-                sides: connectedTile
-                  .getSides()
-                  .filter((_) => _.type == side.type),
-              },
-              {
-                row,
-                col,
-                sides: tileSides.filter((_) => _.type == side.type),
-              },
-            ],
-          });
-        }
-      });
-      console.log("Zones", newZones);
-      setZones(newZones);
-    },
-    [cellValues, cols, rows, zones]
-  );
 
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
@@ -261,17 +173,18 @@ const GameBoard = ({
       if (Math.random() < config.toxicTileProbability!) {
         placeToxicHexOnNearbyFreeHex(row, col);
       }
-      setZonesAfterTilePlacement(row, col, newTile);
+      setZones(row, col, newTile, cellValues);
       setNextTileIndex(0);
       onTurnChange();
     },
     [
+      cellValues,
       config.toxicTileProbability,
       nextTileIndex,
       onTurnChange,
       placeToxicHexOnNearbyFreeHex,
       setCell,
-      setZonesAfterTilePlacement,
+      setZones,
       unlockHexesNearClickedHex,
       upcomingTiles,
       updateSectionCounts,

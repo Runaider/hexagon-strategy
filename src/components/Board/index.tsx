@@ -7,44 +7,41 @@ import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { shuffle } from "lodash";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
-import useStatTracker from "@/hooks/useStatTracker";
 import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { useAppConfig } from "@/contexts/appConfig";
 import StatsBar from "../StatsBar";
 import useZoneTracker from "@/hooks/useZoneTracker";
 
+import { useGameCoreContext } from "@/contexts/gameCoreContext";
+
 const TOXIC_TILE_BUFFER = 3;
 
-const GameBoard = ({
-  rows,
-  cols,
-  hexSize,
-}: {
-  rows: number;
-  cols: number;
-  hexSize: number;
-}) => {
-  const { config } = useAppConfig();
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [score, setScore] = useState(0);
-  const [nextTileIndex, setNextTileIndex] = useState(0);
-  const [currentTurn, setCurrentTurn] = useState(0);
-  const [highlightedHexes, setHighlightedHexes] = useState<
-    { row: number; col: number }[]
-  >([]);
-
-  console.log("Config", config);
-
+const GameBoard = () => {
   const {
-    cellValues,
+    config: { rows, cols, hexSize, maxTurns, actionPrices, previewTileCount },
+  } = useAppConfig();
+  const {
     resources,
+    isGameOver,
+    currentTurn,
+    cellValues,
     tileResourceProduction,
+
     setCell,
     removeCell,
     canPriceBePaid,
     payPrice,
-  } = useStatTracker({ rows, cols });
+    onTurnChange,
+    setScore,
+    score,
+  } = useGameCoreContext();
+  const [nextTileIndex, setNextTileIndex] = useState(0);
+  const [highlightedHexes, setHighlightedHexes] = useState<
+    { row: number; col: number }[]
+  >([]);
+
+  // console.log("Config", config);
 
   const {
     toxicTiles,
@@ -56,8 +53,8 @@ const GameBoard = ({
   });
 
   const { zones, setZones } = useZoneTracker({
-    rows,
-    cols,
+    rows: rows!,
+    cols: cols!,
   });
 
   const onQuestComplete = useCallback(
@@ -95,9 +92,9 @@ const GameBoard = ({
 
   const grid = [];
 
-  const onTurnChange = useCallback(() => {
-    setCurrentTurn((prev) => prev + 1);
-  }, []);
+  // const onTurnChange = useCallback(() => {
+  //   setCurrentTurn((prev) => prev + 1);
+  // }, []);
 
   const unlockHexesNearClickedHex = useCallback(
     (row: number, col: number) => {
@@ -119,7 +116,7 @@ const GameBoard = ({
       const nearby = nearbyHexes(row, col, rows, cols);
       for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
         if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-          if (currentTurn <= config.maxTurns! - TOXIC_TILE_BUFFER) {
+          if (currentTurn <= maxTurns! - TOXIC_TILE_BUFFER) {
             const { id: questId } = addRandomQuest();
             addToxicTile({
               row: nearbyRow,
@@ -138,7 +135,7 @@ const GameBoard = ({
       addToxicTile,
       cellValues,
       cols,
-      config.maxTurns,
+      maxTurns,
       currentTurn,
       rows,
     ]
@@ -170,19 +167,21 @@ const GameBoard = ({
 
       setCell(row, col, newTile);
 
-      if (Math.random() < config.toxicTileProbability!) {
-        placeToxicHexOnNearbyFreeHex(row, col);
-      }
+      // if (Math.random() < toxicTileProbability!) {
+      //   placeToxicHexOnNearbyFreeHex(row, col);
+      // }
+      // if (currentTurn == 5) {
+      //   console.log("Showing quest!!!");
+      //   showQuest();
+      // }
       setZones(row, col, newTile, cellValues);
       setNextTileIndex(0);
       onTurnChange();
     },
     [
       cellValues,
-      config.toxicTileProbability,
       nextTileIndex,
       onTurnChange,
-      placeToxicHexOnNearbyFreeHex,
       setCell,
       setZones,
       unlockHexesNearClickedHex,
@@ -193,22 +192,22 @@ const GameBoard = ({
 
   const onUpcomingTileClick = useCallback(
     (index: number) => {
-      if (!canPriceBePaid(config.actionPrices!.changeUpcomingHex)) {
+      if (!canPriceBePaid(actionPrices!.changeUpcomingHex)) {
         return;
       }
-      payPrice(config.actionPrices!.changeUpcomingHex);
+      payPrice(actionPrices!.changeUpcomingHex);
       setNextTileIndex(index);
     },
-    [canPriceBePaid, config.actionPrices, payPrice]
+    [canPriceBePaid, actionPrices, payPrice]
   );
 
   const onShuffleClick = useCallback(() => {
-    if (!canPriceBePaid(config.actionPrices!.redrawUpcomingHexes)) {
+    if (!canPriceBePaid(actionPrices!.redrawUpcomingHexes)) {
       return;
     }
-    payPrice(config.actionPrices!.redrawUpcomingHexes);
+    payPrice(actionPrices!.redrawUpcomingHexes);
     setUpcomingTiles(shuffle(upcomingTiles));
-  }, [canPriceBePaid, config.actionPrices, payPrice, upcomingTiles]);
+  }, [canPriceBePaid, actionPrices, payPrice, upcomingTiles]);
 
   // on first render place the core tile in the center
   useEffect(() => {
@@ -233,10 +232,10 @@ const GameBoard = ({
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      console.log(`Key pressed: ${event.key}`);
+      // console.log(`Key pressed: ${event.key}`);
       // on r press, rotate the upcoming tile
       if (event.key === "r") {
-        console.log("Rotating upcoming tile");
+        // console.log("Rotating upcoming tile");
         setUpcomingTiles((prev) => {
           prev[nextTileIndex].rotate();
 
@@ -249,23 +248,23 @@ const GameBoard = ({
   );
 
   useEffect(() => {
-    console.log("Adding key listener");
+    // console.log("Adding key listener");
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      console.log("Removing key listener");
+      // console.log("Removing key listener");
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
 
   useEffect(() => {
-    if (currentTurn == config.maxTurns) {
+    if (currentTurn == maxTurns) {
       const { score, scoreLog } = calculateScoreFromGridData(zones, quests);
       console.log("scoreLog", scoreLog);
       alert(`Game over! Your score is ${score}`);
       setScore(score);
     }
-  }, [cellValues, currentTurn, isGameOver, quests, zones]);
+  }, [cellValues, maxTurns, currentTurn, isGameOver, quests, setScore, zones]);
 
   return (
     <div>
@@ -331,6 +330,8 @@ const GameBoard = ({
         grid.push(row);
         return row;
       })}
+      {/* modals */}
+
       {/* resource counts */}
       <div
         className="fixed rounded-md flex text-md text-black"
@@ -471,7 +472,7 @@ const GameBoard = ({
         >
           Shuffle
         </div>
-        {upcomingTiles.slice(0, config.previewTileCount!).map((tile, index) => (
+        {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
           <div key={index} className="flex">
             <div className="w-4 " />
             <div

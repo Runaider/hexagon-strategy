@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
-console.log("path", path.resolve(__dirname, "./src/components/*"));
+// console.log("path", path.resolve(__dirname, "./src/components/*"));
 // https://vite.dev/config/
 export default defineConfig({
   resolve: {

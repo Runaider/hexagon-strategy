@@ -2,6 +2,9 @@ import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 
 const schema = a.schema({
     AppConfig: a.model({
+      rows: a.integer(),
+      cols: a.integer(),
+      hexSize: a.integer(),
       toxicTileProbability: a.float(),
       maxTurns: a.integer(),
       previewTileCount: a.integer(),

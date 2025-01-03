@@ -80,10 +80,8 @@ const useScoreTracker = ({ rows, cols }: Props) => {
                 Resources[side.type as TileSectionType]
               ] || 0) + 0.5,
           };
-          console.log("Adding 0.5 to", side.type, tileResources);
         }
       });
-      console.log("Setting tile resource production", tileResources);
       setTileResourceProduction(tileResources);
     },
     [cellValues, cols, rows, tileResourceProduction]

@@ -16,6 +16,15 @@ export default {
   plugins: [
     function({ addUtilities }) {
       const newUtilities = {
+        ".shadow-filter": {
+          filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
+        },
+        ".shadow-filter-flat": {
+          filter: "drop-shadow(4px 4px 1px rgba(0, 0, 0, 0.3))",
+        },
+        ".shadow-border": {
+          filter: "drop-shadow(0px 0px 0.7px rgba(0, 0, 0, 1))",
+        },
         ".clipped-corner-medium": {
           clipPath:
             "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",

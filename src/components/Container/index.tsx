@@ -2,10 +2,11 @@ import classNames from "classnames";
 
 type Props = {
   children: React.ReactNode;
-  bg?: "default" | "brown" | "green" | "gold";
+  bg?: "default" | "brown" | "green" | "gold" | "none";
+  fullWidth?: boolean;
 };
 
-function Container({ children, bg = "default" }: Props) {
+function Container({ children, bg = "default", fullWidth }: Props) {
   const getBgColor = () => {
     switch (bg) {
       case "brown":
@@ -14,19 +15,28 @@ function Container({ children, bg = "default" }: Props) {
         return "bg-[#184a03]";
       case "gold":
         return "bg-[#4f4200]";
+      case "none":
+        return "";
       default:
         return "bg-[#343434]";
     }
   };
   return (
-    <div className="flex items-center justify-center  clipped-corner-small  bg-[#dfc89d]">
+    <div
+      className={classNames(
+        "flex items-center justify-center  clipped-corner-small   bg-[#dfc89d] ",
+        fullWidth && "w-full"
+      )}
+    >
+      {/* <div className="shadow-border"></div> */}
       <div
         className={classNames(
-          "flex items-center w-[calc(100%-8px)] h-[calc(100%-8px)]",
+          "flex items-center m-1",
           "clipped-corner-small",
           getBgColor(),
           "text-[#dfc89d]",
-          "font-semibold"
+          "font-semibold",
+          fullWidth && "w-full"
         )}
       >
         {children}

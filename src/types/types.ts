@@ -50,4 +50,20 @@ declare global {
     reward: number;
     completed: boolean;
   };
+
+  type QuestInstantAction = {
+    text: string;
+    subtext: string;
+    price?: ResourceProduction;
+    tileModifications?: {
+      actionType: "remove" | "add" | "change";
+      amount: number;
+      tileSectionType: TileSectionType;
+    }[];
+  };
+
+  type QuestInstant = {
+    details: { text: string }[];
+    actions: QuestInstantAction[];
+  };
 }

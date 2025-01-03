@@ -19,7 +19,6 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
       tile: Tile,
       cellValues: { [key: string]: Tile }
     ) => {
-      console.log("setZonesAfterTilePlacement");
       const tileSides = tile.getSides();
       const newZones = cloneDeep(zones);
       tileSides.forEach((side, index) => {

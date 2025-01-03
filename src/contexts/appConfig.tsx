@@ -19,6 +19,9 @@ type ContextValues = {
 const client = generateClient<Schema>();
 
 const defaultConfig = {
+  rows: 25,
+  cols: 25,
+  hexSize: 50,
   toxicTileProbability: 0.3,
   maxTurns: 20,
   previewTileCount: 3,

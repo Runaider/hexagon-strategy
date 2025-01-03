@@ -1,6 +1,5 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
-import { cloneDeep } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 
 type Props = {
@@ -8,33 +7,69 @@ type Props = {
   cols: number;
 };
 
-const Resources: { [key in TileSectionType]: ResourceNames } = {
+const Resources: {
+  [TileSectionType.Forest]: ResourceNames;
+  [TileSectionType.Mountains]: ResourceNames;
+  [TileSectionType.Plains]: ResourceNames;
+  [TileSectionType.City]: ResourceNames;
+} = {
   [TileSectionType.Forest]: "wood",
   [TileSectionType.Mountains]: "stone",
   [TileSectionType.Plains]: "food",
   [TileSectionType.City]: "gold",
-  [TileSectionType.Water]: "_",
-  [TileSectionType.Castle]: "_",
-  [TileSectionType.Toxic]: "_",
 };
 
 const useScoreTracker = ({ rows, cols }: Props) => {
-  const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
+  // const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
 
   const [resources, setResources] = useState<ResourceProduction>({
     wood: 10,
     stone: 10,
     food: 10,
     gold: 10,
-    _: 0,
   });
 
   const [tileResourceProduction, setTileResourceProduction] = useState<{
     [key: string]: ResourceProduction;
   }>({});
 
+  const resourcesPerTurn = useMemo(() => {
+    const resourceCounts = {
+      wood: 0,
+      stone: 0,
+      food: 0,
+      gold: 0,
+    };
+    for (const [key, value] of Object.entries(tileResourceProduction)) {
+      console.log("key", key);
+      console.log("value", value);
+      // if (value.isLocked) {
+      //   continue;
+      // }
+      resourceCounts.wood += value.wood || 0;
+      resourceCounts.stone += value.stone || 0;
+      resourceCounts.food += value.food || 0;
+      resourceCounts.gold += value.gold || 0;
+    }
+    return resourceCounts;
+  }, [tileResourceProduction]);
+
+  console.log("tileResourceProduction", tileResourceProduction);
+
   const updateResourceCounts = useCallback(
-    (newTileRow: number, newTileCol: number, newTile: Tile) => {
+    (
+      newTileRow: number,
+      newTileCol: number,
+      newTile: Tile,
+      cellValues: { [key: string]: Tile }
+    ) => {
+      console.log("Updating resource counts");
+      console.log("newTileRow", newTileRow);
+      console.log("newTileCol", newTileCol);
+      console.log("newTile", newTile);
+      console.log("cellValues", cellValues);
+      console.log("====================================");
+
       const tileResources = { ...tileResourceProduction };
 
       // const resourceCounts = { ...resourcesPerTurn };
@@ -65,6 +100,19 @@ const useScoreTracker = ({ rows, cols }: Props) => {
         }
         const connectedSide = connectedTile.getSides()[(index + 3) % 6];
 
+        // if (
+        //   !(
+        //     connectedSide.type in
+        //     [
+        //       TileSectionType.Forest,
+        //       TileSectionType.Mountains,
+        //       TileSectionType.Plains,
+        //       TileSectionType.City,
+        //     ]
+        //   )
+        // ) {
+        //   return;
+        // }
         if (connectedSide.type === side.type) {
           tileResources[`${newTileRow},${newTileCol}`] = {
             ...tileResources[`${newTileRow},${newTileCol}`],
@@ -84,68 +132,86 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       });
       setTileResourceProduction(tileResources);
     },
-    [cellValues, cols, rows, tileResourceProduction]
+    [cols, rows, tileResourceProduction]
   );
 
-  const setCell = useCallback(
-    (row: number, col: number, tile: Tile) => {
-      setCellValues((prev) => {
-        const newCellValues = { ...prev };
-        newCellValues[`${row},${col}`] = cloneDeep(tile);
-        return newCellValues;
+  const gainResources = useCallback(() => {
+    setResources((prev) => {
+      const newResources = { ...prev };
+      Object.entries(tileResourceProduction).forEach(([, value]) => {
+        // if (value.isLocked) {
+        //   return;
+        // }
+        newResources.wood! += value?.wood || 0;
+        newResources.stone! += value?.stone || 0;
+        newResources.food! += value?.food || 0;
+        newResources.gold! += value?.gold || 0;
       });
+      return newResources;
+    });
+  }, [tileResourceProduction]);
 
-      if (tile.sides[0].type === TileSectionType.Toxic) {
-        return;
-      }
-      // console.log("Setting cell", row, col, tile);
-      updateResourceCounts(row, col, tile);
+  // const
 
-      setResources((prev) => {
-        const newResources = { ...prev };
-        Object.entries(tileResourceProduction).forEach(([, value]) => {
-          // if (value.isLocked) {
-          //   return;
-          // }
-          newResources.wood! += value?.wood || 0;
-          newResources.stone! += value?.stone || 0;
-          newResources.food! += value?.food || 0;
-          newResources.gold! += value?.gold || 0;
-        });
-        return newResources;
-      });
-    },
-    [tileResourceProduction, updateResourceCounts]
-  );
+  // const setCell = useCallback(
+  //   (row: number, col: number, tile: Tile) => {
+  //     setCellValues((prev) => {
+  //       const newCellValues = { ...prev };
+  //       newCellValues[`${row},${col}`] = cloneDeep(tile);
+  //       return newCellValues;
+  //     });
 
-  const removeCell = useCallback(
-    (row: number, col: number) => {
-      setCellValues((prev) => {
-        const newCellValues = { ...prev };
-        delete newCellValues[`${row},${col}`];
-        return newCellValues;
-      });
+  //     if (tile.sides[0].type === TileSectionType.Toxic) {
+  //       return;
+  //     }
+  //     // console.log("Setting cell", row, col, tile);
+  //     updateResourceCounts(row, col, tile);
 
-      setResources((prev) => {
-        const newResources = { ...prev };
-        const tileResource = tileResourceProduction[`${row},${col}`];
-        if (tileResource) {
-          newResources.wood! -= tileResource.wood || 0;
-          newResources.stone! -= tileResource.stone || 0;
-          newResources.food! -= tileResource.food || 0;
-          newResources.gold! -= tileResource.gold || 0;
-        }
-        return newResources;
-      });
+  //     setResources((prev) => {
+  //       const newResources = { ...prev };
+  //       Object.entries(tileResourceProduction).forEach(([, value]) => {
+  //         // if (value.isLocked) {
+  //         //   return;
+  //         // }
+  //         newResources.wood! += value?.wood || 0;
+  //         newResources.stone! += value?.stone || 0;
+  //         newResources.food! += value?.food || 0;
+  //         newResources.gold! += value?.gold || 0;
+  //       });
+  //       return newResources;
+  //     });
+  //   },
+  //   [tileResourceProduction, updateResourceCounts]
+  // );
 
-      setTileResourceProduction((prev) => {
-        const newTileResourceProduction = { ...prev };
-        delete newTileResourceProduction[`${row},${col}`];
-        return newTileResourceProduction;
-      });
-    },
-    [tileResourceProduction]
-  );
+  // const removeCell = useCallback(
+  //   (row: number, col: number) => {
+  //     setCellValues((prev) => {
+  //       const newCellValues = { ...prev };
+  //       delete newCellValues[`${row},${col}`];
+  //       return newCellValues;
+  //     });
+
+  //     setResources((prev) => {
+  //       const newResources = { ...prev };
+  //       const tileResource = tileResourceProduction[`${row},${col}`];
+  //       if (tileResource) {
+  //         newResources.wood! -= tileResource.wood || 0;
+  //         newResources.stone! -= tileResource.stone || 0;
+  //         newResources.food! -= tileResource.food || 0;
+  //         newResources.gold! -= tileResource.gold || 0;
+  //       }
+  //       return newResources;
+  //     });
+
+  //     setTileResourceProduction((prev) => {
+  //       const newTileResourceProduction = { ...prev };
+  //       delete newTileResourceProduction[`${row},${col}`];
+  //       return newTileResourceProduction;
+  //     });
+  //   },
+  //   [tileResourceProduction]
+  // );
 
   const canPriceBePaid = useCallback(
     (price: ResourceProduction) => {
@@ -175,22 +241,23 @@ const useScoreTracker = ({ rows, cols }: Props) => {
 
   return useMemo(
     () => ({
-      cellValues,
+      
       resources,
+      resourcesPerTurn,
       tileResourceProduction,
       payPrice,
       canPriceBePaid,
-      setCell,
-      removeCell,
+      updateResourceCounts,
+      gainResources,
     }),
     [
-      cellValues,
       resources,
+      resourcesPerTurn,
       tileResourceProduction,
       payPrice,
       canPriceBePaid,
-      setCell,
-      removeCell,
+      updateResourceCounts,
+      gainResources,
     ]
   );
 };

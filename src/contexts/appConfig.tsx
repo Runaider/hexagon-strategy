@@ -60,7 +60,6 @@ function AppConfigProvider({ children }: Props) {
 
   const fetchTodos = async () => {
     const { data: items, errors } = await client.models.AppConfig.list();
-    console.info("items", items);
     console.error(errors);
     setLoading(false);
     if (errors?.length ?? 0 > 0) {

@@ -1,5 +1,4 @@
 import { createRoot } from "react-dom/client";
-import GameBoard from "@/components/Board";
 
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
@@ -11,6 +10,7 @@ import "@mantine/notifications/styles.css";
 import "./index.css";
 import { GameCoreContextProvider } from "./contexts/gameCoreContext";
 import { QuestContextProvider } from "./contexts/questContext";
+import GameLayout from "./components/GameLayout";
 
 Amplify.configure(outputs);
 
@@ -20,7 +20,7 @@ createRoot(document.getElementById("root")!).render(
     <AppConfigProvider>
       <GameCoreContextProvider>
         <QuestContextProvider>
-          <GameBoard />
+          <GameLayout />
         </QuestContextProvider>
       </GameCoreContextProvider>
     </AppConfigProvider>

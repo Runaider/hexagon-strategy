@@ -18,14 +18,14 @@ declare global {
       hexes: { row: number; col: number; sides: TileSide[] }[];
     }[];
   };
-  type ResourceNames = "wood" | "stone" | "food" | "gold" | "_";
+  type ResourceNames = "wood" | "stone" | "food" | "gold";
 
   type ResourceProduction = {
-    wood?: number;
-    stone?: number;
-    food?: number;
-    gold?: number;
-    _: number;
+    wood?: number | null;
+    stone?: number | null;
+    food?: number | null;
+    gold?: number | null;
+    // _: number;
     // isLocked: boolean;
   };
 

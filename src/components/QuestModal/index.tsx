@@ -19,7 +19,8 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
   return (
     <Modal
       classNames={{
-        content: "bg-[#a59192] text-[#3f3937] font-bold clipped-corner-small ",
+        content:
+          "bg-background-primary text-text-primary font-bold clipped-corner-small ",
         body: "m-0 p-0",
       }}
       opened={isVisible}
@@ -42,7 +43,7 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
             {quest.details.map((detail) => (
               <div
                 key={detail.text}
-                className="text-[#3f3937] font-bold px-2 pt-1"
+                className="text-text-primary  font-bold px-2 pt-1"
               >
                 {detail.text}
               </div>
@@ -59,9 +60,9 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
           >
             <div className="shadow-border">
               <Container bg="none" fullWidth>
-                <div className=" text-[#3f3937] font-bold p-0 w-full flex flex-col items-center justify-center">
+                <div className=" text-text-primary font-bold p-0 w-full flex flex-col items-center justify-center">
                   <div className="">{action.text}</div>
-                  <div className="border-b-[1px] border-[#3f3937] my-1 opacity-30 w-[60%]" />
+                  <div className="border-b-[1px] border-text-primary my-1 opacity-30 w-[60%]" />
                   <div className=" italic text-sm font-medium">
                     {action.subtext}
                   </div>

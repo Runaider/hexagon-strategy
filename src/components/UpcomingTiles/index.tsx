@@ -25,6 +25,7 @@ function UpcomingTiles() {
     payPrice(actionPrices!.redrawUpcomingHexes!);
     shuffleTiles();
   };
+
   const onUpcomingTileClick = (index: number) => {
     if (!canPriceBePaid(actionPrices!.changeUpcomingHex!)) {
       return;
@@ -53,31 +54,40 @@ function UpcomingTiles() {
   }, [handleKeyDown]);
 
   return (
-    <div className="flex justify-center">
-      <div
+    <div className="flex flex-col items-center w-screen h-10 bg-background-primary">
+      {/* <div
         className="absolute right-[-42px] top-[-12px] text-lg font-bold bg-indigo-600 px-2 h-8 rounded-full flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
         onClick={onShuffleClick}
       >
         Shuffle
-      </div>
-      {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
-        <div key={index} className="flex">
-          <div className="w-4 " />
-          <div
-            className={classNames(
-              "transition-transform",
-              nextTileIndex == index ? "scale-125" : ""
-            )}
-          >
-            <HexagonTile
-              tile={tile}
-              hexSize={hexSize!}
-              muted={false}
-              onClick={() => onUpcomingTileClick(index)}
-            />
-          </div>
+      </div> */}
+      <div className="flex items-center justify-center shadow-filter-flat">
+        <div
+          className="absolute flex p-4 bg-background-secondary top-[-105px]  clipped-corner-medium"
+          //   style={{ transform: "translateX(-50%)" }}
+        >
+          {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
+            <div key={index} className="flex">
+              <div className="w-4 " />
+              <div
+                className={classNames(
+                  "transition-transform cursor-pointer",
+                  nextTileIndex == index ? "scale-110" : "",
+                  nextTileIndex != index ? "opacity-50" : "",
+                  "hover:opacity-100"
+                )}
+              >
+                <HexagonTile
+                  tile={tile}
+                  hexSize={hexSize!}
+                  muted={false}
+                  onClick={() => onUpcomingTileClick(index)}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 }

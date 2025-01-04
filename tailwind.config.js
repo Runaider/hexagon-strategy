@@ -11,6 +11,11 @@ export default {
         "custom-inner-highlight-hover":
           "inset 2px 2px 3px rgba(255, 255, 255, 0.8), inset -2px -2px 3px rgba(0, 0, 0, 0.3);",
       },
+      colors: {
+        "background-primary": "#a59192",
+        "background-secondary": "#dfc89d",
+        "text-primary": "#3f3937",
+      },
     },
   },
   plugins: [

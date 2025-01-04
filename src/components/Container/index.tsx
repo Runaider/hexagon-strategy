@@ -3,10 +3,16 @@ import classNames from "classnames";
 type Props = {
   children: React.ReactNode;
   bg?: "default" | "brown" | "green" | "gold" | "none";
+  withBorder?: boolean;
   fullWidth?: boolean;
 };
 
-function Container({ children, bg = "default", fullWidth }: Props) {
+function Container({
+  children,
+  bg = "default",
+  fullWidth,
+  withBorder = true,
+}: Props) {
   const getBgColor = () => {
     switch (bg) {
       case "brown":
@@ -24,7 +30,8 @@ function Container({ children, bg = "default", fullWidth }: Props) {
   return (
     <div
       className={classNames(
-        "flex items-center justify-center  clipped-corner-small   bg-[#dfc89d] ",
+        "flex items-center justify-center clipped-corner-small",
+        withBorder && "bg-background-secondary",
         fullWidth && "w-full"
       )}
     >

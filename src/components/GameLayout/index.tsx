@@ -8,7 +8,7 @@ function GameLayout() {
       {/* Stats */}
       <div
         className="fixed rounded-md flex text-md text-black"
-        style={{ top: "20px", left: "50%", transform: "translateX(-50%)" }}
+        style={{ top: "0", left: "50%", transform: "translateX(-50%)" }}
       >
         <StatsBar />
       </div>
@@ -17,8 +17,8 @@ function GameLayout() {
       <GameBoard />
       {/* Upcoming Tiles */}
       <div
-        className="fixed bg-white shadow-md border p-4 rounded-md flex items-center justify-center"
-        style={{ bottom: "30px", left: "50%", transform: "translateX(-50%)" }}
+        className="fixed  flex items-center justify-center"
+        style={{ bottom: "0", left: "50%", transform: "translateX(-50%)" }}
       >
         <UpcomingTiles />
       </div>

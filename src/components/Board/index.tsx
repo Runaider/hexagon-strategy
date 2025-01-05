@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
 import { nearbyHexes } from "../../utils/nearbyHexes";
@@ -14,6 +14,7 @@ import { useGameCoreContext } from "@/contexts/gameCoreContext";
 const TOXIC_TILE_BUFFER = 3;
 
 const GameBoard = () => {
+  const tileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const {
     config: { rows, cols, hexSize, maxTurns },
   } = useAppConfig();
@@ -103,6 +104,24 @@ const GameBoard = () => {
     [onTilePlace]
   );
 
+  const scrollToCenter = (key: string) => {
+    console.log("Scrolling to center before if", tileRefs.current, key);
+
+    if (tileRefs.current && tileRefs.current[key]) {
+      console.log("Scrolling to center", key);
+      tileRefs.current[key].scrollIntoView({
+        behavior: "instant",
+        block: "center", // Aligns the element in the vertical center of the viewport
+        inline: "center", // Aligns the element in the horizontal center (for inline elements)
+      });
+    }
+  };
+
+  useEffect(() => {
+    const centerTileKey = `${Math.floor(rows! / 2)},${Math.floor(cols! / 2)}`;
+    scrollToCenter(centerTileKey);
+  }, [cols, rows]);
+
   return (
     <div>
       {Array.from({ length: rows! }, (_, rowIndex) => {
@@ -112,6 +131,7 @@ const GameBoard = () => {
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
+              ref={(el) => (tileRefs.current[`${rowIndex},${colIndex}`] = el)}
               className={classNames(
                 "transition-transform",
                 "hover:z-30",

@@ -63,7 +63,7 @@ function UpcomingTiles() {
       </div> */}
       <div className="flex items-center justify-center shadow-filter-flat">
         <div
-          className="absolute flex p-4 bg-background-secondary top-[-105px]  clipped-corner-medium"
+          className="absolute flex p-4 bg-background-secondary top-[-90px]  clipped-corner-medium"
           //   style={{ transform: "translateX(-50%)" }}
         >
           {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
@@ -79,7 +79,7 @@ function UpcomingTiles() {
               >
                 <HexagonTile
                   tile={tile}
-                  hexSize={hexSize!}
+                  hexSize={40}
                   muted={false}
                   onClick={() => onUpcomingTileClick(index)}
                 />

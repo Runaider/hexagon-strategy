@@ -12,41 +12,69 @@ function StatsBar() {
     },
   } = useGameCoreContext();
   return (
-    <div className="flex flex-col items-center w-screen h-10 bg-background-primary">
-      <div className="flex items-center w-full justify-left shadow-filter-flat px-10">
-        <div className="absolute flex p-2 bg-background-secondary top-[10px]  clipped-corner-medium">
-          <div className="flex justify-between items-center min-w-[100px]">
-            <div className="mr-1 font-bold text-lg">
-              <RollingNumber value={wood ?? 0} /> +{woodPerTurn}
+    <div className="w-screen h-10 bg-background-primary">
+      <div className="absolute top-3 flex  shadow-filter-flat px-10">
+        <div className="relative">
+          <div className="p-2 bg-background-secondary  clipped-corner-medium">
+            <div className="flex justify-between items-center min-w-[60px]">
+              <div className="mr-1 font-bold text-lg">
+                <RollingNumber value={wood ?? 0} />
+              </div>
+              <img className="w-7 h-7 mr-2" src="./log.png" />
             </div>
-            <img className="w-7 h-7 mr-2" src="./log.png" />
+          </div>{" "}
+          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
+            +{woodPerTurn}
           </div>
         </div>
         {/*  */}
-        <div className="absolute flex p-2 bg-background-secondary top-[10px] left-[170px]  clipped-corner-medium">
-          <div className="flex justify-between items-center min-w-[100px]">
-            <div className="mr-2 font-bold text-lg">
-              <RollingNumber value={stone ?? 0} /> +{stonePerTurn}
+        <div className=" mx-2" />
+        {/*  */}
+        <div className="relative">
+          <div className="p-2 bg-background-secondary clipped-corner-medium">
+            <div className="flex justify-between items-center min-w-[70px]">
+              <div className="mr-2 font-bold text-lg">
+                <RollingNumber value={stone ?? 0} />
+              </div>
+              <img className="w-7 h-7 mr-2" src="./stone.png" />
             </div>
-            <img className="w-7 h-7 mr-2" src="./stone.png" />
+          </div>
+          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
+            +{stonePerTurn}
           </div>
         </div>
         {/*  */}
-        <div className="absolute flex p-2 bg-background-secondary top-[10px] left-[300px]  clipped-corner-medium">
-          <div className="flex justify-between items-center min-w-[100px]">
-            <div className="mr-1 font-bold text-lg">
-              <RollingNumber value={food ?? 0} /> +{foodPerTurn}
+        <div className=" mx-2" />
+        {/*  */}
+        <div className="relative">
+          <div className="p-2 bg-background-secondary clipped-corner-medium">
+            <div className="flex justify-between items-center min-w-[70px]">
+              <div className="mr-1 font-bold text-lg">
+                <RollingNumber value={food ?? 0} />
+              </div>
+              <img className="w-7 h-7 mr-2" src="./food.png" />
             </div>
-            <img className="w-7 h-7 mr-2" src="./food.png" />
+          </div>
+          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
+            +{foodPerTurn}
           </div>
         </div>
         {/*  */}
-        <div className="absolute flex p-2 bg-background-secondary top-[10px] left-[430px]  clipped-corner-medium">
-          <div className="flex justify-between items-center min-w-[100px]">
-            <div className="mr-1 font-bold text-lg">
-              <RollingNumber value={money ?? 0} /> +{moneyPerTurn}
+        <div className=" mx-2" />
+        {/*  */}
+
+        <div className="relative">
+          <div className=" p-2 bg-background-secondary clipped-corner-medium">
+            <div className="flex justify-between items-center min-w-[70px] ">
+              <div className="mr-1 font-bold text-lg">
+                <RollingNumber value={money ?? 0} />
+              </div>
+
+              <img className="w-7 h-7 mr-2" src="./money.png" />
             </div>
-            <img className="w-7 h-7 mr-2" src="./money.png" />
+          </div>
+          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
+            +{moneyPerTurn}
           </div>
         </div>
       </div>

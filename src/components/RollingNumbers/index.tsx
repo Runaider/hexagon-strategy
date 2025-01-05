@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { motion, animate } from "framer-motion";
+import React, { useEffect } from "react";
+import { motion, useMotionValue, animate } from "framer-motion";
 import { usePrevious } from "@mantine/hooks";
 
 type Props = {
@@ -7,36 +7,37 @@ type Props = {
 };
 
 function RollingNumber({ value }: Props) {
-  const previousValue = usePrevious(value || 0);
+  const previousValue = usePrevious(value);
+  const count = useMotionValue(value);
 
-  // Reference for motion.div to control text content
-  const ref = useRef<HTMLDivElement>(null);
-
+  console.log("count", count);
   useEffect(() => {
-    // if (previousValue === value) return;
-    const controlNumbers = animate(previousValue, value, {
+    const controls = animate(count, value, {
       duration: 1.5,
       ease: "easeOut",
-      onUpdate: (currentValue) => {
-        if (ref.current) {
-          ref.current.textContent = Math.round(currentValue).toString();
-        }
+      onUpdate: (latest) => {
+        count.set(Math.round(latest));
       },
     });
 
-    return () => controlNumbers.stop();
-  }, [previousValue, value]);
+    return () => controls.stop();
+  }, [value, count]);
 
   return (
     <motion.div
-      ref={ref}
-      key={value} // Dynamically trigger animation by changing the key
+      key={value}
       className="inline-block"
       initial={{ scale: 1 }}
-      animate={{ scale: [1.3, 1], color: ["#22c55e", "#000000"] }} // Scale and color animation
+      animate={{
+        scale: [1.3, 1],
+        color:
+          (previousValue ?? 0) <= value
+            ? ["#06a406", "#000000"]
+            : ["#d00505", "#000000"],
+      }}
       transition={{ duration: 1, ease: "easeOut" }}
     >
-      {value}
+      <motion.pre>{count}</motion.pre>
     </motion.div>
   );
 }

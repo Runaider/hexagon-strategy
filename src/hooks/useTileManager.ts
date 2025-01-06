@@ -64,39 +64,16 @@ function UseTileManager({ allTiles }: Props) {
     return upcomingTiles[nextTileIndex];
   }, [nextTileIndex, upcomingTiles]);
 
-  const setCell = useCallback((row: number, col: number, tile: Tile) => {
-    let newCellValues = {} as {
-      [key: string]: Tile;
-    };
-    setCellValues((prev) => {
-      newCellValues = { ...prev };
+  const setCell = useCallback(
+    (row: number, col: number, tile: Tile) => {
+      const newCellValues = { ...cellValues };
       newCellValues[`${row},${col}`] = cloneDeep(tile);
-      return newCellValues;
-    });
+      setCellValues(newCellValues);
 
-    // if (tile.sides[0].type === TileSectionType.Toxic) {
-    //   return;
-    // }
-
-    return newCellValues;
-
-    // console.log("Setting cell", row, col, tile);
-    //   updateResourceCounts(row, col, tile);
-
-    //   setResources((prev) => {
-    //     const newResources = { ...prev };
-    //     Object.entries(tileResourceProduction).forEach(([, value]) => {
-    //       // if (value.isLocked) {
-    //       //   return;
-    //       // }
-    //       newResources.wood! += value?.wood || 0;
-    //       newResources.stone! += value?.stone || 0;
-    //       newResources.food! += value?.food || 0;
-    //       newResources.gold! += value?.gold || 0;
-    //     });
-    //     return newResources;
-    //   });
-  }, []);
+      return cloneDeep(newCellValues);
+    },
+    [cellValues]
+  );
 
   const removeCell = useCallback((row: number, col: number) => {
     let newCellValues = {} as {
@@ -109,31 +86,9 @@ function UseTileManager({ allTiles }: Props) {
     });
 
     return newCellValues;
-
-    //   setResources((prev) => {
-    //     const newResources = { ...prev };
-    //     const tileResource = tileResourceProduction[`${row},${col}`];
-    //     if (tileResource) {
-    //       newResources.wood! -= tileResource.wood || 0;
-    //       newResources.stone! -= tileResource.stone || 0;
-    //       newResources.food! -= tileResource.food || 0;
-    //       newResources.gold! -= tileResource.gold || 0;
-    //     }
-    //     return newResources;
-    //   });
-
-    //   setTileResourceProduction((prev) => {
-    //     const newTileResourceProduction = { ...prev };
-    //     delete newTileResourceProduction[`${row},${col}`];
-    //     return newTileResourceProduction;
-    //   });
   }, []);
 
   const shuffleTiles = useCallback(() => {
-    // if (!canPriceBePaid(actionPrices!.redrawUpcomingHexes)) {
-    //   return;
-    // }
-    // payPrice(actionPrices!.redrawUpcomingHexes);
     setUpcomingTiles(shuffle(upcomingTiles));
   }, [upcomingTiles]);
 

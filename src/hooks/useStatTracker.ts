@@ -1,5 +1,6 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
+import { cloneDeep } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 
 type Props = {
@@ -41,11 +42,6 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       gold: 0,
     };
     for (const [key, value] of Object.entries(tileResourceProduction)) {
-      console.log("key", key);
-      console.log("value", value);
-      // if (value.isLocked) {
-      //   continue;
-      // }
       resourceCounts.wood += value.wood || 0;
       resourceCounts.stone += value.stone || 0;
       resourceCounts.food += value.food || 0;
@@ -63,13 +59,6 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       newTile: Tile,
       cellValues: { [key: string]: Tile }
     ) => {
-      console.log("Updating resource counts");
-      console.log("newTileRow", newTileRow);
-      console.log("newTileCol", newTileCol);
-      console.log("newTile", newTile);
-      console.log("cellValues", cellValues);
-      console.log("====================================");
-
       const tileResources = { ...tileResourceProduction };
 
       // const resourceCounts = { ...resourcesPerTurn };
@@ -99,20 +88,18 @@ const useScoreTracker = ({ rows, cols }: Props) => {
           return;
         }
         const connectedSide = connectedTile.getSides()[(index + 3) % 6];
+        if (
+          !(
+            connectedSide.type == TileSectionType.Mountains ||
+            connectedSide.type == TileSectionType.Forest ||
+            connectedSide.type == TileSectionType.Plains ||
+            connectedSide.type == TileSectionType.City
+          )
+        ) {
+          // debugger;s
+          return;
+        }
 
-        // if (
-        //   !(
-        //     connectedSide.type in
-        //     [
-        //       TileSectionType.Forest,
-        //       TileSectionType.Mountains,
-        //       TileSectionType.Plains,
-        //       TileSectionType.City,
-        //     ]
-        //   )
-        // ) {
-        //   return;
-        // }
         if (connectedSide.type === side.type) {
           tileResources[`${newTileRow},${newTileCol}`] = {
             ...tileResources[`${newTileRow},${newTileCol}`],
@@ -151,68 +138,6 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     });
   }, [tileResourceProduction]);
 
-  // const
-
-  // const setCell = useCallback(
-  //   (row: number, col: number, tile: Tile) => {
-  //     setCellValues((prev) => {
-  //       const newCellValues = { ...prev };
-  //       newCellValues[`${row},${col}`] = cloneDeep(tile);
-  //       return newCellValues;
-  //     });
-
-  //     if (tile.sides[0].type === TileSectionType.Toxic) {
-  //       return;
-  //     }
-  //     // console.log("Setting cell", row, col, tile);
-  //     updateResourceCounts(row, col, tile);
-
-  //     setResources((prev) => {
-  //       const newResources = { ...prev };
-  //       Object.entries(tileResourceProduction).forEach(([, value]) => {
-  //         // if (value.isLocked) {
-  //         //   return;
-  //         // }
-  //         newResources.wood! += value?.wood || 0;
-  //         newResources.stone! += value?.stone || 0;
-  //         newResources.food! += value?.food || 0;
-  //         newResources.gold! += value?.gold || 0;
-  //       });
-  //       return newResources;
-  //     });
-  //   },
-  //   [tileResourceProduction, updateResourceCounts]
-  // );
-
-  // const removeCell = useCallback(
-  //   (row: number, col: number) => {
-  //     setCellValues((prev) => {
-  //       const newCellValues = { ...prev };
-  //       delete newCellValues[`${row},${col}`];
-  //       return newCellValues;
-  //     });
-
-  //     setResources((prev) => {
-  //       const newResources = { ...prev };
-  //       const tileResource = tileResourceProduction[`${row},${col}`];
-  //       if (tileResource) {
-  //         newResources.wood! -= tileResource.wood || 0;
-  //         newResources.stone! -= tileResource.stone || 0;
-  //         newResources.food! -= tileResource.food || 0;
-  //         newResources.gold! -= tileResource.gold || 0;
-  //       }
-  //       return newResources;
-  //     });
-
-  //     setTileResourceProduction((prev) => {
-  //       const newTileResourceProduction = { ...prev };
-  //       delete newTileResourceProduction[`${row},${col}`];
-  //       return newTileResourceProduction;
-  //     });
-  //   },
-  //   [tileResourceProduction]
-  // );
-
   const canPriceBePaid = useCallback(
     (price: ResourceProduction) => {
       return (
@@ -241,7 +166,6 @@ const useScoreTracker = ({ rows, cols }: Props) => {
 
   return useMemo(
     () => ({
-      
       resources,
       resourcesPerTurn,
       tileResourceProduction,

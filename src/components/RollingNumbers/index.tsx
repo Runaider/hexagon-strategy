@@ -10,7 +10,6 @@ function RollingNumber({ value }: Props) {
   const previousValue = usePrevious(value);
   const count = useMotionValue(value);
 
-  console.log("count", count);
   useEffect(() => {
     const controls = animate(count, value, {
       duration: 1.5,

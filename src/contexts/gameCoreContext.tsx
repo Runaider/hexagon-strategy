@@ -149,15 +149,6 @@ function GameCoreContextProvider({ children }: Props) {
     setCell(centerRow, centerCol, Tile_CASTLE);
   }, [cols, rows, isFirstTilePlaced, setCell, unlockAdjacentHexes]);
 
-  //   useEffect(() => {
-  //     if (currentTurn == maxTurns) {
-  //       const { score, scoreLog } = calculateScoreFromGridData(zones, quests);
-  //       console.log("scoreLog", scoreLog);
-  //       alert(`Game over! Your score is ${score}`);
-  //       setScore(score);
-  //     }
-  //   }, [cellValues, maxTurns, currentTurn, isGameOver, quests, setScore, zones]);
-
   const contextValue = useMemo(
     () => ({
       currentTurn,

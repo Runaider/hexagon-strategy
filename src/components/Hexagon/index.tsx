@@ -43,7 +43,7 @@ const Hexagon = ({
   const sizeByPoints = sizeFromPoints(points);
 
   return (
-    <div className="transition-transform hover:scale-110" onClick={onClick}>
+    <div className="transition-transform " onClick={onClick}>
       {img ? (
         <div
           className="relative"

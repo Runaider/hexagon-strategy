@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
-import { shuffle } from "lodash";
 
 function HexagonClouds({
   hexSize,
-  delay=0.5,
-  speed=20,
-  scale=1,
+  delay = 0.5,
+  speed = 20,
+  scale = 1,
 }: {
   hexSize: number;
   delay: number;

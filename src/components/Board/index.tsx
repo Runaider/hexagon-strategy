@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TileSectionType } from "../../models/Tile";
 import HexagonTile from "../HexagonTile";
-import { nearbyHexes } from "../../utils/nearbyHexes";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
 import { shuffle } from "lodash";
-import useQuests from "@/hooks/useQuests";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { useAppConfig } from "@/contexts/appConfig";
 
@@ -13,21 +10,15 @@ import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import { AnimatePresence, motion } from "framer-motion";
 import HexagonClouds from "../HexagonClouds";
 
-const TOXIC_TILE_BUFFER = 3;
-
 const GameBoard = () => {
   const tileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const {
-    config: { rows, cols, hexSize, maxTurns },
+    config: { rows, cols, hexSize },
   } = useAppConfig();
   const {
-    zones,
     nextTileToPlace,
-    resources,
     unlockedCells,
-    currentTurn,
     cellValues,
-    tileResourceProduction,
 
     setCell,
     removeCell,

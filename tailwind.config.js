@@ -16,6 +16,9 @@ export default {
         "background-secondary": "#dfc89d",
         "text-primary": "#3f3937",
       },
+      backgroundImage: {
+        "radial-gradient": "radial-gradient(var(--tw-gradient-stops))",
+      },
     },
   },
   plugins: [

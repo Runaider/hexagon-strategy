@@ -12,6 +12,7 @@ import { useAppConfig } from "./appConfig";
 import { allTiles, Tile_CASTLE } from "@/constants/hexTiles";
 import UseTileManager from "@/hooks/useTileManager";
 import useZoneTracker from "@/hooks/useZoneTracker";
+import useTileCostTracker from "@/hooks/useTileCostTracker";
 
 type Props = {
   children?: JSX.Element;
@@ -39,6 +40,10 @@ type ContextValues = {
     [key: string]: boolean;
   };
   nextTileToPlace: Tile;
+
+  tilePlaceResourcePrice: ResourceProduction;
+  setTilePlaceActiveResource: (resource: ResourceNames) => void;
+
   setNextTileIndex: (index: number) => void;
 
   setCell: (row: number, col: number, tile: Tile) => void;
@@ -63,7 +68,7 @@ const useGameCoreContext = () => useContext(GameCoreContext);
 
 function GameCoreContextProvider({ children }: Props) {
   const {
-    config: { rows, cols },
+    config: { rows, cols, perTurnResourceProduction },
   } = useAppConfig();
 
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
@@ -86,7 +91,15 @@ function GameCoreContextProvider({ children }: Props) {
     payPrice,
     updateResourceCounts,
     gainResources,
+    gainResourcesFromAdjacentTiles,
   } = useStatTracker({ rows: rows!, cols: cols! });
+
+  const {
+    activeResource,
+    resourcePrice,
+    setActiveResource,
+    incrementResourceUsedTimes,
+  } = useTileCostTracker();
 
   const {
     nextTileToPlace,
@@ -106,22 +119,54 @@ function GameCoreContextProvider({ children }: Props) {
 
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
-    gainResources();
-  }, [gainResources]);
+    if (perTurnResourceProduction) {
+      gainResources();
+    }
+  }, [gainResources, perTurnResourceProduction]);
 
   const onTilePlace = useCallback(
     (row: number, col: number) => {
+      if (!perTurnResourceProduction) {
+        console.log(
+          "Placing tile",
+          canPriceBePaid(resourcePrice),
+          resourcePrice
+        );
+        if (!canPriceBePaid(resourcePrice)) {
+          return;
+        }
+      }
+
       const newCellValues = setCell(row, col, nextTileToPlace);
       moveUpcomingTiles();
       unlockAdjacentHexes(row, col);
-      updateResourceCounts(row, col, nextTileToPlace, newCellValues);
+
+      if (perTurnResourceProduction) {
+        updateResourceCounts(row, col, nextTileToPlace, newCellValues);
+      } else {
+        gainResourcesFromAdjacentTiles(
+          row,
+          col,
+          nextTileToPlace,
+          newCellValues
+        );
+        payPrice(resourcePrice);
+        incrementResourceUsedTimes();
+      }
+
       setZones(row, col, nextTileToPlace, newCellValues);
       onTurnChange();
     },
     [
+      canPriceBePaid,
+      gainResourcesFromAdjacentTiles,
+      incrementResourceUsedTimes,
       moveUpcomingTiles,
       nextTileToPlace,
       onTurnChange,
+      payPrice,
+      perTurnResourceProduction,
+      resourcePrice,
       setCell,
       setZones,
       unlockAdjacentHexes,
@@ -167,6 +212,9 @@ function GameCoreContextProvider({ children }: Props) {
 
       unlockedCells,
 
+      tilePlaceResourcePrice: resourcePrice,
+      setTilePlaceActiveResource: setActiveResource,
+
       setCell,
       removeCell,
       canPriceBePaid,
@@ -196,6 +244,9 @@ function GameCoreContextProvider({ children }: Props) {
       nextTileIndex,
 
       unlockedCells,
+
+      resourcePrice,
+      setActiveResource,
 
       setCell,
       removeCell,

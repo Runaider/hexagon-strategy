@@ -1,6 +1,5 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
-import { cloneDeep } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 
 type Props = {
@@ -21,8 +20,6 @@ const Resources: {
 };
 
 const useScoreTracker = ({ rows, cols }: Props) => {
-  // const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
-
   const [resources, setResources] = useState<ResourceProduction>({
     wood: 10,
     stone: 10,
@@ -138,14 +135,63 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     });
   }, [tileResourceProduction]);
 
+  const gainResourcesFromAdjacentTiles = useCallback(
+    (
+      newTileRow: number,
+      newTileCol: number,
+      newTile: Tile,
+      cellValues: { [key: string]: Tile }
+    ) => {
+      newTile.getSides().forEach((side, index) => {
+        const connectedHex = getHexConnectedToSide(
+          newTileRow,
+          newTileCol,
+          rows,
+          cols,
+          index
+        );
+        if (!connectedHex) {
+          console.warn("No connected hex found");
+          return;
+        }
+        const [connectedRow, connectedCol] = connectedHex;
+        const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
+        if (!connectedTile) {
+          console.info("No connected tile");
+          return;
+        }
+        const connectedSide = connectedTile.getSides()[(index + 3) % 6];
+
+        if (connectedSide.type === side.type) {
+          setResources((prev) => {
+            const newResources = { ...prev };
+            newResources[Resources[side.type as keyof typeof Resources]]! += 1;
+
+            return newResources;
+          });
+        }
+      });
+    },
+    [cols, rows]
+  );
+
   const canPriceBePaid = useCallback(
     (price: ResourceProduction) => {
-      return (
-        (resources.wood || 0) >= (price.wood || 0) &&
-        (resources.stone || 0) >= (price.stone || 0) &&
-        (resources.food || 0) >= (price.food || 0) &&
-        (resources.gold || 0) >= (price.gold || 0)
-      );
+      console.log("price", price, "resources", resources);
+      for (const [key, value] of Object.entries(price)) {
+        console.log("key", key, "value", value);
+        if ((resources[key as ResourceNames] || 0) < (value ?? 0)) {
+          console.log("Not enough resources");
+          return false;
+        }
+      }
+      return true;
+      // return (
+      //   (resources.wood || 0) >= (price.wood || 0) &&
+      //   (resources.stone || 0) >= (price.stone || 0) &&
+      //   (resources.food || 0) >= (price.food || 0) &&
+      //   (resources.gold || 0) >= (price.gold || 0)
+      // );
     },
     [resources]
   );
@@ -173,6 +219,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       canPriceBePaid,
       updateResourceCounts,
       gainResources,
+      gainResourcesFromAdjacentTiles,
     }),
     [
       resources,
@@ -182,6 +229,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       canPriceBePaid,
       updateResourceCounts,
       gainResources,
+      gainResourcesFromAdjacentTiles,
     ]
   );
 };

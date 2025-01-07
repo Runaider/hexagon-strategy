@@ -25,6 +25,7 @@ const defaultConfig = {
   toxicTileProbability: 0.3,
   maxTurns: 20,
   previewTileCount: 3,
+  perTurnResourceProduction: false,
   actionPrices: {
     rotate: {
       wood: 0,

@@ -1,7 +1,12 @@
 import { useGameCoreContext } from "@/contexts/gameCoreContext";
-import RollingNumber from "../RollingNumbers";
+import StatsBarItem from "../StatsBarItem";
+import { useAppConfig } from "@/contexts/appConfig";
+import { useMemo } from "react";
 
 function StatsBar() {
+  const {
+    config: { perTurnResourceProduction },
+  } = useAppConfig();
   const {
     resources: { wood, stone, food, gold: money },
     resourcesPerTurn: {
@@ -10,112 +15,53 @@ function StatsBar() {
       food: foodPerTurn,
       gold: moneyPerTurn,
     },
+    tilePlaceResourcePrice,
+    setTilePlaceActiveResource,
   } = useGameCoreContext();
+
+  const resourceInUse = useMemo(
+    () => Object.keys(tilePlaceResourcePrice)[0] as ResourceNames,
+    [tilePlaceResourcePrice]
+  );
   return (
     <div className="w-screen h-10 bg-background-primary">
       <div className="absolute top-3 flex  shadow-filter-flat px-10">
-        <div className="relative">
-          <div className="p-2 bg-background-secondary  clipped-corner-medium">
-            <div className="flex justify-between items-center min-w-[60px]">
-              <div className="mr-1 font-bold text-lg">
-                <RollingNumber value={wood ?? 0} />
-              </div>
-              <img className="w-7 h-7 mr-2" src="./log.png" />
-            </div>
-          </div>{" "}
-          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
-            +{woodPerTurn}
-          </div>
-        </div>
-        {/*  */}
+        <StatsBarItem
+          amount={wood!}
+          amountPerTurn={woodPerTurn!}
+          resource={"wood"}
+          showPerTurn={perTurnResourceProduction!}
+          isActive={resourceInUse === "wood"}
+          onClick={() => setTilePlaceActiveResource("wood")}
+        />
         <div className=" mx-2" />
-        {/*  */}
-        <div className="relative">
-          <div className="p-2 bg-background-secondary clipped-corner-medium">
-            <div className="flex justify-between items-center min-w-[70px]">
-              <div className="mr-2 font-bold text-lg">
-                <RollingNumber value={stone ?? 0} />
-              </div>
-              <img className="w-7 h-7 mr-2" src="./stone.png" />
-            </div>
-          </div>
-          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
-            +{stonePerTurn}
-          </div>
-        </div>
-        {/*  */}
+        <StatsBarItem
+          amount={stone!}
+          amountPerTurn={stonePerTurn!}
+          resource={"stone"}
+          showPerTurn={perTurnResourceProduction!}
+          isActive={resourceInUse === "stone"}
+          onClick={() => setTilePlaceActiveResource("stone")}
+        />
         <div className=" mx-2" />
-        {/*  */}
-        <div className="relative">
-          <div className="p-2 bg-background-secondary clipped-corner-medium">
-            <div className="flex justify-between items-center min-w-[70px]">
-              <div className="mr-1 font-bold text-lg">
-                <RollingNumber value={food ?? 0} />
-              </div>
-              <img className="w-7 h-7 mr-2" src="./food.png" />
-            </div>
-          </div>
-          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
-            +{foodPerTurn}
-          </div>
-        </div>
-        {/*  */}
+        <StatsBarItem
+          amount={food!}
+          amountPerTurn={foodPerTurn!}
+          resource={"food"}
+          showPerTurn={perTurnResourceProduction!}
+          isActive={resourceInUse === "food"}
+          onClick={() => setTilePlaceActiveResource("food")}
+        />
         <div className=" mx-2" />
-        {/*  */}
-
-        <div className="relative">
-          <div className=" p-2 bg-background-secondary clipped-corner-medium">
-            <div className="flex justify-between items-center min-w-[70px] ">
-              <div className="mr-1 font-bold text-lg">
-                <RollingNumber value={money ?? 0} />
-              </div>
-
-              <img className="w-7 h-7 mr-2" src="./money.png" />
-            </div>
-          </div>
-          <div className="absolute z-20 right-[-15px] bottom-[-15px] px-2 clipped-corner-medium bg-background-primary">
-            +{moneyPerTurn}
-          </div>
-        </div>
+        <StatsBarItem
+          amount={money!}
+          amountPerTurn={moneyPerTurn!}
+          resource={"gold"}
+          showPerTurn={perTurnResourceProduction!}
+          isActive={resourceInUse === "gold"}
+          onClick={() => setTilePlaceActiveResource("gold")}
+        />
       </div>
-      {/* <Container bg="brown">
-        <div className="flex justify-between items-center px-4 py-2 min-w-[100px]">
-          <div className="mr-1 font-bold text-lg">
-            {wood ?? 0} +{woodPerTurn}
-          </div>
-          <img className="w-7 h-7" src="./log.png" />
-        </div>
-      </Container>
-      <div className=" mx-2" />
-
-      <Container>
-        <div className="flex justify-between items-center px-4 py-2 min-w-[100px]">
-          <div className="mr-2 font-bold text-lg">
-            {stone ?? 0} +{stonePerTurn}
-          </div>
-          <img className="w-7 h-7" src="./stone.png" />
-        </div>
-      </Container>
-      <div className=" mx-2" />
-
-      <Container bg="green">
-        <div className="flex justify-between items-center px-4 py-2 min-w-[100px]">
-          <div className="mr-1 font-bold text-lg">
-            {food ?? 0} +{foodPerTurn}
-          </div>
-          <img className="w-7 h-7" src="./food.png" />
-        </div>
-      </Container>
-      <div className=" mx-2" />
-
-      <Container bg="gold">
-        <div className="flex justify-between items-center px-4 py-2 min-w-[100px]">
-          <div className="mr-1 font-bold text-lg">
-            {money ?? 0} +{moneyPerTurn}
-          </div>
-          <img className="w-7 h-7 " src="./money.png" />
-        </div>
-      </Container> */}
     </div>
   );
 }

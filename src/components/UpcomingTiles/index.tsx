@@ -3,20 +3,31 @@ import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import classNames from "classnames";
 import HexagonTile from "../HexagonTile";
 import { useCallback, useEffect } from "react";
+import useTileCostTracker from "@/hooks/useTileCostTracker";
+import ResourceIcon from "../ResourceIcon";
+import RollingNumber from "../RollingNumbers";
 
 function UpcomingTiles() {
   const {
-    config: { previewTileCount, hexSize, actionPrices },
+    config: { previewTileCount, perTurnResourceProduction, actionPrices },
   } = useAppConfig();
+
   const {
     upcomingTiles,
     nextTileIndex,
+    tilePlaceResourcePrice,
     canPriceBePaid,
     setNextTileIndex,
     payPrice,
     shuffleTiles,
     rotateUpcomingTile,
   } = useGameCoreContext();
+
+  const resourceAmount =
+    tilePlaceResourcePrice[
+      Object.keys(tilePlaceResourcePrice)[0] as ResourceNames
+    ];
+  const resourceName = Object.keys(tilePlaceResourcePrice)[0] as ResourceNames;
 
   const onShuffleClick = () => {
     if (!canPriceBePaid(actionPrices!.redrawUpcomingHexes!)) {
@@ -27,10 +38,10 @@ function UpcomingTiles() {
   };
 
   const onUpcomingTileClick = (index: number) => {
-    if (!canPriceBePaid(actionPrices!.changeUpcomingHex!)) {
-      return;
-    }
-    payPrice(actionPrices!.changeUpcomingHex!);
+    // if (!canPriceBePaid(actionPrices!.changeUpcomingHex!)) {
+    //   return;
+    // }
+    // payPrice(actionPrices!.changeUpcomingHex!);
     setNextTileIndex(index);
   };
 
@@ -54,14 +65,15 @@ function UpcomingTiles() {
   }, [handleKeyDown]);
 
   return (
-    <div className="flex flex-col items-center w-screen h-10 bg-background-primary">
-      {/* <div
-        className="absolute right-[-42px] top-[-12px] text-lg font-bold bg-indigo-600 px-2 h-8 rounded-full flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
-        onClick={onShuffleClick}
-      >
-        Shuffle
-      </div> */}
-      <div className="flex items-center justify-center shadow-filter-flat">
+    <div className=" flex flex-col items-center w-screen h-10 bg-background-primary">
+      <div className="relative flex items-center justify-center shadow-filter-flat">
+        <div className="absolute flex items-center z-20 top-[-110px] right-[-170px] px-2 py-1 clipped-corner-medium bg-background-primary text-text-primary text-xl font-bold">
+          {/* {resourceAmount}{" "} */}
+          <RollingNumber value={resourceAmount!} />
+          <span className="ml-1">
+            <ResourceIcon resource={resourceName} size="small" />
+          </span>
+        </div>
         <div
           className="absolute flex p-4 bg-background-secondary top-[-90px]  clipped-corner-medium"
           //   style={{ transform: "translateX(-50%)" }}

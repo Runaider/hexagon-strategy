@@ -8,6 +8,7 @@ const schema = a.schema({
       toxicTileProbability: a.float(),
       maxTurns: a.integer(),
       previewTileCount: a.integer(),
+      perTurnResourceProduction: a.boolean(),
       actionPrices: a.customType({
         rotate: a.customType({
           wood: a.integer(),

@@ -127,11 +127,11 @@ function GameCoreContextProvider({ children }: Props) {
   const onTilePlace = useCallback(
     (row: number, col: number) => {
       if (!perTurnResourceProduction) {
-        console.log(
-          "Placing tile",
-          canPriceBePaid(resourcePrice),
-          resourcePrice
-        );
+        // console.log(
+        //   "Placing tile",
+        //   canPriceBePaid(resourcePrice),
+        //   resourcePrice
+        // );
         if (!canPriceBePaid(resourcePrice)) {
           return;
         }

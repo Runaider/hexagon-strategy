@@ -35,7 +35,7 @@ function QuestContextProvider({ children }: Props) {
 
   const onQuestActionClick = useCallback(
     (action: QuestInstantAction) => {
-      console.log("Action clicked", action);
+      // console.log("Action clicked", action);
 
       //   handleActionPrice
       if (action.price) {
@@ -64,7 +64,7 @@ function QuestContextProvider({ children }: Props) {
               }
             }
 
-            console.log("Removing tile", tileTypeToRemove);
+            // console.log("Removing tile", tileTypeToRemove);
           }
         });
       }

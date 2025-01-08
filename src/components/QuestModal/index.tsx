@@ -1,5 +1,7 @@
 import { Modal } from "@mantine/core";
 import Container from "../Container";
+import { useGameCoreContext } from "@/contexts/gameCoreContext";
+import classNames from "classnames";
 
 type Props = {
   quest: QuestInstant;
@@ -9,8 +11,10 @@ type Props = {
 };
 
 function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
+  const { canPriceBePaid } = useGameCoreContext();
   const _onActionClick = (action: QuestInstantAction) => {
-    console.log("Action clicked", action);
+    if (action.price && !canPriceBePaid(action.price)) return;
+    // console.log("Action clicked", action);
     onActionClick(action);
     onClose();
   };
@@ -55,7 +59,12 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
         {quest.actions.map((action) => (
           <div
             key={action.text}
-            className="mx-4 mt-2 transition-all  hover:scale-105 hover:shadow-filter-flat cursor-pointer"
+            className={classNames(
+              "mx-4 mt-2 transition-all ",
+              !action.price || canPriceBePaid(action.price)
+                ? "cursor-pointer hover:scale-105 hover:shadow-filter-flat "
+                : "cursor-not-allowed opacity-60"
+            )}
             onClick={() => _onActionClick(action)}
           >
             <div className="shadow-border">

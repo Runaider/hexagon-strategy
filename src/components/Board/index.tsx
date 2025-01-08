@@ -210,7 +210,7 @@ const GameBoard = () => {
                       hexSize={hexSize!}
                       muted={false}
                       onClick={function(): void {
-                        console.log("Filed tile clicked", rowIndex, colIndex);
+                        // console.log("Filed tile clicked", rowIndex, colIndex);
                       }}
                     />
                   </motion.div>

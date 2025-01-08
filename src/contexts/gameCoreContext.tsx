@@ -107,7 +107,7 @@ function GameCoreContextProvider({ children }: Props) {
     setActiveResource,
     incrementResourceUsedTimes,
     resetTileCosts,
-  } = useTileCostTracker();
+  } = useTileCostTracker(canPriceBePaid);
 
   const {
     nextTileToPlace,

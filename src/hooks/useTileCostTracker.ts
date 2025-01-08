@@ -26,14 +26,24 @@ function useTileCostTracker() {
     }));
   }, [activeResource]);
 
+  const resetTileCosts = useCallback(() => {
+    setResourceUsedTimes({
+      wood: 0,
+      stone: 0,
+      food: 0,
+      gold: 0,
+    });
+  }, []);
+
   return useMemo(
     () => ({
       activeResource,
       resourcePrice,
       setActiveResource,
       incrementResourceUsedTimes,
+      resetTileCosts,
     }),
-    [activeResource, incrementResourceUsedTimes, resourcePrice]
+    [activeResource, incrementResourceUsedTimes, resetTileCosts, resourcePrice]
   );
 }
 

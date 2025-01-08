@@ -20,12 +20,18 @@ function Button({
   onClick,
 }: Props) {
   return (
-    <div className={classNames(elevated && "shadow-filter-flat")}>
-      <div className="shadow-border">
+    <div
+      className={classNames(
+        elevated && "shadow-filter-flat",
+        fullWidth && "w-full"
+      )}
+    >
+      <div className={classNames("shadow-border", fullWidth && "w-full")}>
         <motion.button
           whileHover={{ scale: 1.2 }}
           whileTap={{ scale: 0.8 }}
           onClick={onClick}
+          className={classNames(fullWidth && "w-full")}
         >
           <Container bg="none" fullWidth={fullWidth}>
             <div

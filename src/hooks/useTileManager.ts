@@ -2,7 +2,7 @@ import { useAppConfig } from "@/contexts/appConfig";
 import { Tile, TileSectionType } from "@/models/Tile";
 import { nearbyHexes } from "@/utils/nearbyHexes";
 import { cloneDeep, shuffle } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Props = {
   allTiles: Tile[];
@@ -101,6 +101,24 @@ function UseTileManager({ allTiles }: Props) {
     });
   }, [nextTileIndex]);
 
+  const resetTileManager = useCallback(() => {
+    setCellValues({});
+    setNextTileIndex(0);
+    setUpcomingTiles(shuffle([...allTiles]));
+    setUnlockedCells({});
+    setSectionsCounts({
+      [TileSectionType.City]: 0,
+      [TileSectionType.Forest]: 0,
+      [TileSectionType.Mountains]: 0,
+      [TileSectionType.Plains]: 0,
+      [TileSectionType.Water]: 0,
+    });
+  }, [allTiles]);
+
+  useEffect(() => {
+    console.log("cell values changed", cloneDeep(cellValues));
+  }, [cellValues]);
+
   return useMemo(
     () => ({
       cellValues,
@@ -117,6 +135,7 @@ function UseTileManager({ allTiles }: Props) {
       removeCell,
       shuffleTiles,
       rotateUpcomingTile,
+      resetTileManager,
     }),
     [
       cellValues,
@@ -133,6 +152,7 @@ function UseTileManager({ allTiles }: Props) {
       removeCell,
       shuffleTiles,
       rotateUpcomingTile,
+      resetTileManager,
     ]
   );
 }

@@ -21,15 +21,13 @@ createRoot(document.getElementById("root")!).render(
   <MantineProvider defaultColorScheme="dark">
     <AppConfigProvider>
       <GameCoreContextProvider>
-        <GameRouterProvider
-          menu={<StartScreen />}
-          game={
-            <QuestContextProvider>
-              <GameLayout />
-            </QuestContextProvider>
-          }
-          leaderboard={<></>}
-        ></GameRouterProvider>
+        <QuestContextProvider>
+          <GameRouterProvider
+            menu={<StartScreen />}
+            game={<GameLayout />}
+            leaderboard={<></>}
+          ></GameRouterProvider>
+        </QuestContextProvider>
       </GameCoreContextProvider>
     </AppConfigProvider>
   </MantineProvider>

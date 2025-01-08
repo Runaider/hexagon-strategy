@@ -23,7 +23,7 @@ const defaultConfig = {
   cols: 25,
   hexSize: 50,
   toxicTileProbability: 0.3,
-  maxTurns: 20,
+  maxTurns: 3,
   previewTileCount: 3,
   perTurnResourceProduction: false,
   actionPrices: {

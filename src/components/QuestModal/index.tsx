@@ -13,7 +13,7 @@ type Props = {
 function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
   const { canPriceBePaid } = useGameCoreContext();
   const _onActionClick = (action: QuestInstantAction) => {
-    if (action.price && !canPriceBePaid(action.price)) return;
+    if (action.price && !canPriceBePaid?.(action.price)) return;
     // console.log("Action clicked", action);
     onActionClick(action);
     onClose();
@@ -61,7 +61,7 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
             key={action.text}
             className={classNames(
               "mx-4 mt-2 transition-all ",
-              !action.price || canPriceBePaid(action.price)
+              !action.price || canPriceBePaid?.(action.price)
                 ? "cursor-pointer hover:scale-105 hover:shadow-filter-flat "
                 : "cursor-not-allowed opacity-60"
             )}

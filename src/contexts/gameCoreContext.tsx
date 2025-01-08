@@ -13,6 +13,9 @@ import { allTiles, Tile_CASTLE } from "@/constants/hexTiles";
 import UseTileManager from "@/hooks/useTileManager";
 import useZoneTracker from "@/hooks/useZoneTracker";
 import useTileCostTracker from "@/hooks/useTileCostTracker";
+import GameOverScreen from "@/components/GameOverScreen";
+import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
+import { cloneDeep, first } from "lodash";
 
 type Props = {
   children?: JSX.Element;
@@ -21,6 +24,7 @@ type Props = {
 type ContextValues = {
   currentTurn: number;
   score: number;
+  scoreLog: string[];
   isGameOver: boolean;
 
   zones: Zones;
@@ -60,6 +64,7 @@ type ContextValues = {
   rotateUpcomingTile: () => void;
 
   shuffleTiles: () => void;
+  onReset: () => void;
 };
 
 const GameCoreContext = createContext<ContextValues>({} as ContextValues);
@@ -68,13 +73,14 @@ const useGameCoreContext = () => useContext(GameCoreContext);
 
 function GameCoreContextProvider({ children }: Props) {
   const {
-    config: { rows, cols, perTurnResourceProduction },
+    config: { rows, cols, perTurnResourceProduction, maxTurns },
   } = useAppConfig();
 
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
 
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [scoreLog, setScoreLog] = useState([] as string[]);
   const [currentTurn, setCurrentTurn] = useState(0);
 
   const { zones, setZones } = useZoneTracker({
@@ -92,6 +98,7 @@ function GameCoreContextProvider({ children }: Props) {
     updateResourceCounts,
     gainResources,
     gainResourcesFromAdjacentTiles,
+    resetStats,
   } = useStatTracker({ rows: rows!, cols: cols! });
 
   const {
@@ -99,6 +106,7 @@ function GameCoreContextProvider({ children }: Props) {
     resourcePrice,
     setActiveResource,
     incrementResourceUsedTimes,
+    resetTileCosts,
   } = useTileCostTracker();
 
   const {
@@ -115,6 +123,7 @@ function GameCoreContextProvider({ children }: Props) {
     updateSectionCounts,
     shuffleTiles,
     rotateUpcomingTile,
+    resetTileManager,
   } = UseTileManager({ allTiles });
 
   const onTurnChange = useCallback(() => {
@@ -183,6 +192,16 @@ function GameCoreContextProvider({ children }: Props) {
     [removeCell, setZones, updateSectionCounts]
   );
 
+  const onReset = useCallback(() => {
+    setCurrentTurn(0);
+    setScore(0);
+    setScoreLog([]);
+    setIsGameOver(false);
+    resetStats();
+    resetTileCosts();
+    resetTileManager();
+  }, [resetStats, resetTileCosts, resetTileManager]);
+
   useEffect(() => {
     if (isFirstTilePlaced) {
       return;
@@ -194,12 +213,32 @@ function GameCoreContextProvider({ children }: Props) {
     setCell(centerRow, centerCol, Tile_CASTLE);
   }, [cols, rows, isFirstTilePlaced, setCell, unlockAdjacentHexes]);
 
+  useEffect(() => {
+    if (currentTurn == maxTurns && !isGameOver) {
+      setIsGameOver(true);
+      const { score, scoreLog } = calculateScoreFromGridData(zones, []);
+      setScore(score);
+      setScoreLog(scoreLog);
+    }
+  }, [currentTurn, isGameOver, maxTurns, resources.gold, zones]);
+
+  useEffect(() => {
+    if (isFirstTilePlaced && Object.keys(cellValues)?.length === 0) {
+      setIsFirstTilePlaced(true);
+      const centerRow = Math.floor(rows! / 2);
+      const centerCol = Math.floor(cols! / 2);
+      unlockAdjacentHexes(centerRow, centerCol);
+      setCell(centerRow, centerCol, Tile_CASTLE);
+    }
+  }, [cellValues, cols, isFirstTilePlaced, rows, setCell, unlockAdjacentHexes]);
+
   const contextValue = useMemo(
     () => ({
       currentTurn,
       nextTileToPlace,
       zones,
       score,
+      scoreLog,
       isGameOver,
 
       cellValues,
@@ -227,27 +266,24 @@ function GameCoreContextProvider({ children }: Props) {
       setIsGameOver,
       onTurnChange,
       rotateUpcomingTile,
+      onReset,
     }),
     [
       currentTurn,
       nextTileToPlace,
       zones,
       score,
+      scoreLog,
       isGameOver,
-
       cellValues,
       resources,
       resourcesPerTurn,
       tileResourceProduction,
-
       upcomingTiles,
       nextTileIndex,
-
       unlockedCells,
-
       resourcePrice,
       setActiveResource,
-
       setCell,
       removeCell,
       canPriceBePaid,
@@ -256,15 +292,15 @@ function GameCoreContextProvider({ children }: Props) {
       onTileRemove,
       shuffleTiles,
       setNextTileIndex,
-      setScore,
-      setIsGameOver,
       onTurnChange,
       rotateUpcomingTile,
+      onReset,
     ]
   );
 
   return (
     <GameCoreContext.Provider value={contextValue}>
+      {isGameOver && <GameOverScreen />}
       {children}
     </GameCoreContext.Provider>
   );

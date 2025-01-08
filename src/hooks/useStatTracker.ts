@@ -210,6 +210,16 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     [setResources]
   );
 
+  const resetStats = useCallback(() => {
+    setResources({
+      wood: 10,
+      stone: 10,
+      food: 10,
+      gold: 10,
+    });
+    setTileResourceProduction({});
+  }, []);
+
   return useMemo(
     () => ({
       resources,
@@ -220,6 +230,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       updateResourceCounts,
       gainResources,
       gainResourcesFromAdjacentTiles,
+      resetStats,
     }),
     [
       resources,
@@ -230,6 +241,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       updateResourceCounts,
       gainResources,
       gainResourcesFromAdjacentTiles,
+      resetStats,
     ]
   );
 };

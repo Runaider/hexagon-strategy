@@ -1,6 +1,7 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
 import { useCallback, useMemo, useState } from "react";
+import useCellValueStore from "@/dataStores/cellValues";
 
 type Props = {
   rows: number;
@@ -20,6 +21,7 @@ const Resources: {
 };
 
 const useScoreTracker = ({ rows, cols }: Props) => {
+  const cellValues = useCellValueStore((state) => state.values);
   const [resources, setResources] = useState<ResourceProduction>({
     wood: 10,
     stone: 10,
@@ -53,8 +55,8 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     (
       newTileRow: number,
       newTileCol: number,
-      newTile: Tile,
-      cellValues: { [key: string]: Tile }
+      newTile: Tile
+      // cellValues: { [key: string]: Tile }
     ) => {
       const tileResources = { ...tileResourceProduction };
 
@@ -116,7 +118,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       });
       setTileResourceProduction(tileResources);
     },
-    [cols, rows, tileResourceProduction]
+    [cellValues, cols, rows, tileResourceProduction]
   );
 
   const gainResources = useCallback(() => {
@@ -136,12 +138,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
   }, [tileResourceProduction]);
 
   const gainResourcesFromAdjacentTiles = useCallback(
-    (
-      newTileRow: number,
-      newTileCol: number,
-      newTile: Tile,
-      cellValues: { [key: string]: Tile }
-    ) => {
+    (newTileRow: number, newTileCol: number, newTile: Tile) => {
       newTile.getSides().forEach((side, index) => {
         const connectedHex = getHexConnectedToSide(
           newTileRow,
@@ -172,7 +169,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
         }
       });
     },
-    [cols, rows]
+    [cellValues, cols, rows]
   );
 
   const canPriceBePaid = useCallback(

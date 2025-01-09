@@ -9,13 +9,16 @@ import React, {
   useEffect,
 } from "react";
 import { useAppConfig } from "./appConfig";
-import { allTiles, Tile_CASTLE } from "@/constants/hexTiles";
+import { allTiles, Tile_CASTLE, Tile_TOXIC } from "@/constants/hexTiles";
 import UseTileManager from "@/hooks/useTileManager";
 import useZoneTracker from "@/hooks/useZoneTracker";
 import useTileCostTracker from "@/hooks/useTileCostTracker";
 import GameOverScreen from "@/components/GameOverScreen";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
-import { cloneDeep, first } from "lodash";
+import useToxicTileTracker from "@/hooks/useToxicTileTracker";
+import { getNearbyHexes } from "@/utils/nearbyHexes";
+// import { getNearbyHexes } from "@/utils/nearbyHexes";
+// import useCellValueStore from "src/dataStores/cellValues";
 
 type Props = {
   children?: JSX.Element;
@@ -46,6 +49,9 @@ type ContextValues = {
   nextTileToPlace: Tile;
 
   tilePlaceResourcePrice: ResourceProduction;
+  removeToxicTile: (row: number, col: number) => void;
+  getToxicTile: (row: number, col: number) => ToxicTile | undefined;
+  isTileToxic: (row: number, col: number) => boolean;
   setTilePlaceActiveResource: (resource: ResourceNames) => void;
 
   setNextTileIndex: (index: number) => void;
@@ -73,7 +79,13 @@ const useGameCoreContext = () => useContext(GameCoreContext);
 
 function GameCoreContextProvider({ children }: Props) {
   const {
-    config: { rows, cols, perTurnResourceProduction, maxTurns },
+    config: {
+      rows,
+      cols,
+      perTurnResourceProduction,
+      maxTurns,
+      toxicTileProbability,
+    },
   } = useAppConfig();
 
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
@@ -115,6 +127,7 @@ function GameCoreContextProvider({ children }: Props) {
     cellValues,
     upcomingTiles,
     unlockedCells,
+
     setNextTileIndex,
     setCell,
     removeCell,
@@ -126,6 +139,18 @@ function GameCoreContextProvider({ children }: Props) {
     resetTileManager,
   } = UseTileManager({ allTiles });
 
+  const {
+    createToxicTile,
+    isTileToxic,
+    getToxicTile,
+    removeTile: removeToxicTile,
+  } = useToxicTileTracker({
+    setCell,
+    removeCell,
+    canPriceBePaid,
+    payPrice,
+  });
+
   const onTurnChange = useCallback(() => {
     setCurrentTurn((prev) => prev + 1);
     if (perTurnResourceProduction) {
@@ -136,38 +161,44 @@ function GameCoreContextProvider({ children }: Props) {
   const onTilePlace = useCallback(
     (row: number, col: number) => {
       if (!perTurnResourceProduction) {
-        // console.log(
-        //   "Placing tile",
-        //   canPriceBePaid(resourcePrice),
-        //   resourcePrice
-        // );
         if (!canPriceBePaid(resourcePrice)) {
           return;
         }
       }
 
-      const newCellValues = setCell(row, col, nextTileToPlace);
+      setCell(row, col, nextTileToPlace);
       moveUpcomingTiles();
       unlockAdjacentHexes(row, col);
 
       if (perTurnResourceProduction) {
-        updateResourceCounts(row, col, nextTileToPlace, newCellValues);
+        updateResourceCounts(row, col, nextTileToPlace);
       } else {
-        gainResourcesFromAdjacentTiles(
-          row,
-          col,
-          nextTileToPlace,
-          newCellValues
-        );
+        gainResourcesFromAdjacentTiles(row, col, nextTileToPlace);
         payPrice(resourcePrice);
         incrementResourceUsedTimes();
       }
 
-      setZones(row, col, nextTileToPlace, newCellValues);
+      if (Math.random() < toxicTileProbability!) {
+        const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
+        for (const hex of nearbyHexes) {
+          const freeHex = !cellValues[`${hex[0]},${hex[1]}`];
+          if (freeHex) {
+            const tile = createToxicTile(hex[0], hex[1], currentTurn);
+            setCell(tile.row, tile.col, Tile_TOXIC);
+            break;
+          }
+        }
+      }
+
+      setZones(row, col, nextTileToPlace);
       onTurnChange();
     },
     [
       canPriceBePaid,
+      cellValues,
+      cols,
+      createToxicTile,
+      currentTurn,
       gainResourcesFromAdjacentTiles,
       incrementResourceUsedTimes,
       moveUpcomingTiles,
@@ -176,8 +207,10 @@ function GameCoreContextProvider({ children }: Props) {
       payPrice,
       perTurnResourceProduction,
       resourcePrice,
+      rows,
       setCell,
       setZones,
+      toxicTileProbability,
       unlockAdjacentHexes,
       updateResourceCounts,
     ]
@@ -185,9 +218,12 @@ function GameCoreContextProvider({ children }: Props) {
 
   const onTileRemove = useCallback(
     (row: number, col: number, tile: Tile) => {
-      const newCellValues = removeCell(row, col);
+      // const newCellValues = removeCell(row, col);
+      // updateSectionCounts(tile);
+      // setZones(row, col, tile, newCellValues);
+      removeCell(row, col);
       updateSectionCounts(tile);
-      setZones(row, col, tile, newCellValues);
+      setZones(row, col, tile);
     },
     [removeCell, setZones, updateSectionCounts]
   );
@@ -252,8 +288,10 @@ function GameCoreContextProvider({ children }: Props) {
       unlockedCells,
 
       tilePlaceResourcePrice: resourcePrice,
+      removeToxicTile,
+      getToxicTile,
       setTilePlaceActiveResource: setActiveResource,
-
+      isTileToxic,
       setCell,
       removeCell,
       canPriceBePaid,
@@ -283,7 +321,10 @@ function GameCoreContextProvider({ children }: Props) {
       nextTileIndex,
       unlockedCells,
       resourcePrice,
+      removeToxicTile,
+      getToxicTile,
       setActiveResource,
+      isTileToxic,
       setCell,
       removeCell,
       canPriceBePaid,

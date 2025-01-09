@@ -9,40 +9,49 @@ import { useAppConfig } from "@/contexts/appConfig";
 import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import { AnimatePresence, motion } from "framer-motion";
 import HexagonClouds from "../HexagonClouds";
+import { Resource } from "aws-cdk-lib";
+import ResourceIcon from "../ResourceIcon";
+import { IconBombFilled, IconBulldozer } from "@tabler/icons-react";
+import HexagonTileToxicOverlay from "../HexagonTileToxicOverlay";
+import CloudLayer from "../CloudLayer";
 
 const GameBoard = () => {
   const tileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const {
     config: { rows, cols, hexSize },
   } = useAppConfig();
+
   const {
     nextTileToPlace,
     unlockedCells,
     cellValues,
-
+    isTileToxic,
     setCell,
     removeCell,
     onTilePlace,
+    getToxicTile,
+    removeToxicTile,
   } = useGameCoreContext();
+
   const [highlightedHexes, setHighlightedHexes] = useState<
     { row: number; col: number }[]
   >([]);
 
-  const {
-    toxicTiles,
-    addTile: addToxicTile,
-    removeTile: removeToxicTile,
-  } = useToxicTileTracker({
-    setCell,
-    removeCell,
-  });
+  // const {
+  //   toxicTiles,
+  //   addTile: addToxicTile,
+  //   removeTile: removeToxicTile,
+  // } = useToxicTileTracker({
+  //   setCell,
+  //   removeCell,
+  // });
 
-  const onQuestComplete = useCallback(
-    (questId: string) => {
-      removeToxicTile(toxicTiles.find((tile) => tile.questId === questId)!);
-    },
-    [removeToxicTile, toxicTiles]
-  );
+  // const onQuestComplete = useCallback(
+  //   (questId: string) => {
+  //     removeToxicTile(toxicTiles.find((tile) => tile.questId === questId)!);
+  //   },
+  //   [removeToxicTile, toxicTiles]
+  // );
 
   // const { quests, addRandomQuest } = useQuests(
   //   resources,
@@ -114,64 +123,13 @@ const GameBoard = () => {
 
   return (
     <div>
-      <div className="absolute w-full h-full z-0">
-        {Array.from({ length: rows! }, (_, rowIndex) => {
-          const row = Array.from({ length: cols! }, (_, colIndex) => {
-            const x =
-              colIndex * xOffset + (rowIndex % 2 === 1 ? xOffset / 2 : 0);
-            const y = rowIndex * yOffset;
-            return (
-              <div
-                key={`te${rowIndex}-${colIndex}`}
-                className={` z-0 opacity-1 `}
-                style={{
-                  height: `100px`,
-                  width: `86px`,
-                  position: "absolute",
-                  left: `${x}px`,
-                  top: `${y}px`,
-                }}
-              >
-                {Math.random() < 0.05 ? (
-                  <motion.div
-                    key="box"
-                    initial={{ opacity: 1, y: 0 }}
-                    // animate={{ opacity: 1, y: 0 }} // Animate to
-                    exit={{
-                      opacity: 0,
-                      y: rowIndex < hexSize! / 2 ? -20 : 20,
-                      x: colIndex < hexSize! / 2 ? 20 : -20,
-                    }}
-                    transition={{ duration: 0.5 }}
-                    style={{ position: "absolute" }}
-                    // Exit animation
-                  >
-                    <HexagonClouds
-                      scale={shuffle([0.5, 0.75, 1, 1.25])[0]}
-                      delay={
-                        shuffle([
-                          1000,
-                          3000,
-                          6000,
-                          9000,
-                          12000,
-                          15000,
-                          18000,
-                        ])[0]
-                      }
-                      speed={shuffle([40, 30, 20])[0]}
-                      hexSize={hexSize!}
-                    />
-                  </motion.div>
-                ) : (
-                  <></>
-                )}
-              </div>
-            );
-          });
-          return row;
-        })}
-      </div>
+      <CloudLayer
+        rows={rows!}
+        cols={cols!}
+        xOffset={xOffset}
+        yOffset={yOffset}
+        hexSize={hexSize!}
+      />
       {Array.from({ length: rows! }, (_, rowIndex) => {
         const row = Array.from({ length: cols! }, (_, colIndex) => {
           const x = colIndex * xOffset + (rowIndex % 2 === 1 ? xOffset / 2 : 0);
@@ -201,7 +159,7 @@ const GameBoard = () => {
               <AnimatePresence>
                 {cellValues[`${rowIndex},${colIndex}`] ? (
                   <motion.div
-                    initial={{ scale: 1.1, zIndex: 100 }}
+                    initial={{ scale: 1.1 }}
                     animate={{ scale: [1.1, 0.9, 1.1, 1] }}
                     transition={{ duration: 1 }}
                   >
@@ -213,6 +171,12 @@ const GameBoard = () => {
                         // console.log("Filed tile clicked", rowIndex, colIndex);
                       }}
                     />
+                    {isTileToxic(rowIndex, colIndex) && (
+                      <HexagonTileToxicOverlay
+                        toxicTile={getToxicTile(rowIndex, colIndex)!}
+                        onClick={() => removeToxicTile(rowIndex, colIndex)}
+                      />
+                    )}
                   </motion.div>
                 ) : unlockedCells[`${rowIndex},${colIndex}`] ? (
                   <div>

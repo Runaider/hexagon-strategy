@@ -2,8 +2,11 @@ import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
 import { cloneDeep } from "lodash";
 import { useCallback, useMemo, useState } from "react";
+import useCellValueStore from "@/dataStores/cellValues";
 
 const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
+  const cellValues = useCellValueStore((state) => state.values);
+
   const [zones, setZones] = useState<Zones>({
     [TileSectionType.Forest]: [],
     [TileSectionType.Water]: [],
@@ -13,12 +16,7 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   });
 
   const setZonesAfterTilePlacement = useCallback(
-    (
-      row: number,
-      col: number,
-      tile: Tile,
-      cellValues: { [key: string]: Tile }
-    ) => {
+    (row: number, col: number, tile: Tile) => {
       const tileSides = tile.getSides();
       const newZones = cloneDeep(zones);
       tileSides.forEach((side, index) => {
@@ -98,7 +96,7 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
       });
       setZones(newZones);
     },
-    [cols, rows, zones]
+    [cellValues, cols, rows, zones]
   );
 
   return useMemo(() => ({ zones, setZones: setZonesAfterTilePlacement }), [

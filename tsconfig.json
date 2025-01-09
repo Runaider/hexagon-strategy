@@ -21,7 +21,8 @@
       "@/contexts/*": ["src/contexts/*"],
       "@/models/*": ["src/models/*"],
       "@/hooks/*": ["src/hooks/*"],
-      "@/constants/*": ["src/constants/*"]
+      "@/constants/*": ["src/constants/*"],
+      "@/dataStores/*": ["src/dataStores/*"]
     },
     "strict": true,
     "forceConsistentCasingInFileNames": true,

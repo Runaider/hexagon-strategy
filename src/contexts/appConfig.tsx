@@ -22,7 +22,7 @@ const defaultConfig = {
   rows: 25,
   cols: 25,
   hexSize: 50,
-  toxicTileProbability: 0.3,
+  toxicTileProbability: 0.1,
   maxTurns: 20,
   previewTileCount: 3,
   perTurnResourceProduction: false,

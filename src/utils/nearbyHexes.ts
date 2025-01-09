@@ -1,4 +1,9 @@
-const nearbyHexes = (row: number, col: number, rows: number, cols: number) => {
+const getNearbyHexes = (
+  row: number,
+  col: number,
+  rows: number,
+  cols: number
+) => {
   const nearby = [];
   const isOffset = row % 2 === 1;
 
@@ -77,4 +82,4 @@ const getHexConnectedToSide = (
   }
 };
 
-export { nearbyHexes, getHexConnectedToSide };
+export { getNearbyHexes, getHexConnectedToSide };

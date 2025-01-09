@@ -32,23 +32,10 @@ declare global {
   type ToxicTile = {
     row: number;
     col: number;
-    questId: string;
+    priceToDestroy: ResourceProduction;
     spawnedTurn: number;
     destructionTurn: number | null;
     // spreadInterval: number;
-  };
-
-  type Quest = {
-    id: string;
-    title: string;
-    criteria: {
-      type: "poses" | "gather" | "build";
-      target: ResourceNames;
-      amount: number;
-    };
-    description: string;
-    reward: number;
-    completed: boolean;
   };
 
   type QuestInstantAction = {

@@ -1,8 +1,9 @@
 import { useAppConfig } from "@/contexts/appConfig";
 import { Tile, TileSectionType } from "@/models/Tile";
-import { nearbyHexes } from "@/utils/nearbyHexes";
+import { getNearbyHexes } from "@/utils/nearbyHexes";
 import { cloneDeep, shuffle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useCellValueStore from "@/dataStores/cellValues";
 
 type Props = {
   allTiles: Tile[];
@@ -12,7 +13,11 @@ function UseTileManager({ allTiles }: Props) {
   const {
     config: { rows, cols },
   } = useAppConfig();
-  const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
+  // const [cellValues, setCellValues] = useState<{ [key: string]: Tile }>({});
+  const cellValues = useCellValueStore((state) => state.values);
+  const setCellValue = useCellValueStore((state) => state.setValue);
+  const removeCellValue = useCellValueStore((state) => state.removeValue);
+  const resetCellValues = useCellValueStore((state) => state.resetValues);
 
   const [nextTileIndex, setNextTileIndex] = useState(0);
   const [upcomingTiles, setUpcomingTiles] = useState(shuffle([...allTiles]));
@@ -30,7 +35,7 @@ function UseTileManager({ allTiles }: Props) {
 
   const unlockAdjacentHexes = useCallback(
     (row: number, col: number) => {
-      const nearby = nearbyHexes(row, col, rows!, cols!);
+      const nearby = getNearbyHexes(row, col, rows!, cols!);
       nearby.forEach(([nearbyRow, nearbyCol]) => {
         setUnlockedCells((prev) => ({
           ...prev,
@@ -66,27 +71,21 @@ function UseTileManager({ allTiles }: Props) {
 
   const setCell = useCallback(
     (row: number, col: number, tile: Tile) => {
-      const newCellValues = { ...cellValues };
-      newCellValues[`${row},${col}`] = cloneDeep(tile);
-      setCellValues(newCellValues);
+      // const newCellValues = { ...cellValues };
+      // newCellValues[`${row},${col}`] = cloneDeep(tile);
+      setCellValue(row, col, cloneDeep(tile));
 
-      return cloneDeep(newCellValues);
+      // return cloneDeep(newCellValues);
     },
-    [cellValues]
+    [setCellValue]
   );
 
-  const removeCell = useCallback((row: number, col: number) => {
-    let newCellValues = {} as {
-      [key: string]: Tile;
-    };
-    setCellValues((prev) => {
-      newCellValues = { ...prev };
-      delete newCellValues[`${row},${col}`];
-      return newCellValues;
-    });
-
-    return newCellValues;
-  }, []);
+  const removeCell = useCallback(
+    (row: number, col: number) => {
+      removeCellValue(row, col);
+    },
+    [removeCellValue]
+  );
 
   const shuffleTiles = useCallback(() => {
     setUpcomingTiles(shuffle(upcomingTiles));
@@ -102,7 +101,7 @@ function UseTileManager({ allTiles }: Props) {
   }, [nextTileIndex]);
 
   const resetTileManager = useCallback(() => {
-    setCellValues({});
+    resetCellValues();
     setNextTileIndex(0);
     setUpcomingTiles(shuffle([...allTiles]));
     setUnlockedCells({});
@@ -113,7 +112,7 @@ function UseTileManager({ allTiles }: Props) {
       [TileSectionType.Plains]: 0,
       [TileSectionType.Water]: 0,
     });
-  }, [allTiles]);
+  }, [allTiles, resetCellValues]);
 
   useEffect(() => {
     console.log("cell values changed", cloneDeep(cellValues));

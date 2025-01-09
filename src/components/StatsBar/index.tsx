@@ -27,7 +27,7 @@ function StatsBar() {
   );
   return (
     <div className="w-screen h-10 bg-background-primary">
-      <div className="absolute top-3 flex  shadow-filter-flat px-10">
+      <div className="absolute top-3 flex  shadow-filter-flat px-3">
         <StatsBarItem
           amount={wood!}
           amountPerTurn={woodPerTurn!}

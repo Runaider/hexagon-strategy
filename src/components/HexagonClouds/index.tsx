@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { shuffle } from "lodash";
 
 function HexagonClouds({
   hexSize,
@@ -26,7 +27,12 @@ function HexagonClouds({
         animate={{
           opacity: [0, 1, 1, 1, 1, 0],
           x: 300,
-          y: [0, -10, 0],
+          y: shuffle([
+            [0, -5, 0],
+            [0, -10, 0],
+            [0, -15, 0],
+            [0, -20, 0],
+          ])[0],
         }}
         transition={{
           x: {

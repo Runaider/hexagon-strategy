@@ -9,7 +9,6 @@ type Props = {
 };
 
 const HexagonTile = ({ tile, muted, hexSize, onClick }: Props) => {
-  // console.log("Tile", tile);
   return (
     <Hexagon
       size={hexSize}

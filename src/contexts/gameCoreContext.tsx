@@ -17,6 +17,7 @@ import GameOverScreen from "@/components/GameOverScreen";
 import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { getNearbyHexes } from "@/utils/nearbyHexes";
+import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
 // import { getNearbyHexes } from "@/utils/nearbyHexes";
 // import useCellValueStore from "src/dataStores/cellValues";
 
@@ -88,6 +89,7 @@ function GameCoreContextProvider({ children }: Props) {
     },
   } = useAppConfig();
 
+  const { on: onEvent } = useEvents();
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
 
   const [isGameOver, setIsGameOver] = useState(false);
@@ -267,6 +269,17 @@ function GameCoreContextProvider({ children }: Props) {
       setCell(centerRow, centerCol, Tile_CASTLE);
     }
   }, [cellValues, cols, isFirstTilePlaced, rows, setCell, unlockAdjacentHexes]);
+
+  // register event listeners
+  useEffect(() => {
+    const eventCleanup = onEvent(EVENT_TYPES.ZONE_COMPLETE, ({ zone }) => {
+      console.log("Zone complete event received", zone);
+    });
+
+    return () => {
+      eventCleanup();
+    };
+  }, [onEvent, onReset]);
 
   const contextValue = useMemo(
     () => ({

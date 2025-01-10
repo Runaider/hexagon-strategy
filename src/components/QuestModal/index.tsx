@@ -14,7 +14,6 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
   const { canPriceBePaid } = useGameCoreContext();
   const _onActionClick = (action: QuestInstantAction) => {
     if (action.price && !canPriceBePaid?.(action.price)) return;
-    // console.log("Action clicked", action);
     onActionClick(action);
     onClose();
   };

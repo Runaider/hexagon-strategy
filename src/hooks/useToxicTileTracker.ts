@@ -46,10 +46,8 @@ const useToxicTileTracker = ({
 
   const isTileToxic = useCallback(
     (row: number, col: number) => {
-      console.log("Checking for toxic tile at", row, col, toxicTiles);
       const isToxic = toxicTiles.some((t) => t.row === row && t.col === col);
       if (isToxic) {
-        console.log("Toxic tile found at", row, col);
       }
       return isToxic;
     },

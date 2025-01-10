@@ -114,9 +114,9 @@ function UseTileManager({ allTiles }: Props) {
     });
   }, [allTiles, resetCellValues]);
 
-  useEffect(() => {
-    console.log("cell values changed", cloneDeep(cellValues));
-  }, [cellValues]);
+  // useEffect(() => {
+  //   console.log("cell values changed", cloneDeep(cellValues));
+  // }, [cellValues]);
 
   return useMemo(
     () => ({

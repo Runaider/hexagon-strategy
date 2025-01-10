@@ -1,13 +1,23 @@
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getHexConnectedToSide } from "@/utils/nearbyHexes";
 import { cloneDeep } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useCellValueStore from "@/dataStores/cellValues";
+import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
 
 const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   const cellValues = useCellValueStore((state) => state.values);
+  const { dispatch } = useEvents();
 
   const [zones, setZones] = useState<Zones>({
+    [TileSectionType.Forest]: [],
+    [TileSectionType.Water]: [],
+    [TileSectionType.Mountains]: [],
+    [TileSectionType.City]: [],
+    [TileSectionType.Plains]: [],
+  });
+
+  const [completedZones, setCompletedZones] = useState<Zones>({
     [TileSectionType.Forest]: [],
     [TileSectionType.Water]: [],
     [TileSectionType.Mountains]: [],
@@ -59,6 +69,7 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
             row,
             col,
             sides: tileSides.filter((_) => _.type == side.type),
+            tile: cloneDeep(tile),
           });
         } else if (isSideAlreadyInZone && !isConnectedSideInZone) {
           // add the connected hex to the zone
@@ -73,6 +84,7 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
             row: connectedRow,
             col: connectedCol,
             sides: connectedTile.getSides().filter((_) => _.type == side.type),
+            tile: cloneDeep(connectedTile),
           });
         } else {
           // create a new zone
@@ -84,11 +96,13 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
                 sides: connectedTile
                   .getSides()
                   .filter((_) => _.type == side.type),
+                tile: cloneDeep(connectedTile),
               },
               {
                 row,
                 col,
                 sides: tileSides.filter((_) => _.type == side.type),
+                tile: cloneDeep(tile),
               },
             ],
           });
@@ -99,10 +113,56 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
     [cellValues, cols, rows, zones]
   );
 
-  return useMemo(() => ({ zones, setZones: setZonesAfterTilePlacement }), [
-    setZonesAfterTilePlacement,
-    zones,
-  ]);
+  // check if a zone is completed
+  // if it is, add it to the completed zones
+
+  useEffect(() => {
+    const newZones = {
+      [TileSectionType.Forest]: [],
+      [TileSectionType.Water]: [],
+      [TileSectionType.Mountains]: [],
+      [TileSectionType.City]: [],
+      [TileSectionType.Plains]: [],
+    };
+    Object.entries(zones).forEach(([zoneType, zoneList]) => {
+      zoneList.forEach((zone) => {
+        const isZoneComplete = zone.hexes.every((hex) => {
+          // are all sides of the zoneType type connected
+          const isConnected = hex.tile.getSides().every((side, index) => {
+            if (side.type !== zoneType) return true;
+            const connectedHex = getHexConnectedToSide(
+              hex.row,
+              hex.col,
+              rows,
+              cols,
+              index
+            );
+            if (!connectedHex) {
+              return false;
+            }
+            const [connectedRow, connectedCol] = connectedHex;
+            const connectedTile = cellValues[`${connectedRow},${connectedCol}`];
+            if (!connectedTile) {
+              return false;
+            }
+            return true;
+          });
+          return isConnected;
+        });
+        if (!isZoneComplete) {
+          return;
+        }
+        dispatch(EVENT_TYPES.ZONE_COMPLETE, { zone });
+        newZones[zoneType as TileSectionType].push(zone);
+      });
+    });
+    setCompletedZones(newZones);
+  }, [cellValues, cols, dispatch, rows, zones]);
+
+  return useMemo(
+    () => ({ zones, completedZones, setZones: setZonesAfterTilePlacement }),
+    [setZonesAfterTilePlacement, completedZones, zones]
+  );
 };
 
 export default useZoneTracker;

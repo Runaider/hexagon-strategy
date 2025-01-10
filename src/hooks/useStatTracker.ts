@@ -49,8 +49,6 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     return resourceCounts;
   }, [tileResourceProduction]);
 
-  // console.log("tileResourceProduction", tileResourceProduction);
-
   const updateResourceCounts = useCallback(
     (
       newTileRow: number,
@@ -174,21 +172,12 @@ const useScoreTracker = ({ rows, cols }: Props) => {
 
   const canPriceBePaid = useCallback(
     (price: ResourceProduction) => {
-      // console.log("price", price, "resources", resources);
       for (const [key, value] of Object.entries(price)) {
-        // console.log("key", key, "value", value);
         if ((resources[key as ResourceNames] || 0) < (value ?? 0)) {
-          // console.log("Not enough resources");
           return false;
         }
       }
       return true;
-      // return (
-      //   (resources.wood || 0) >= (price.wood || 0) &&
-      //   (resources.stone || 0) >= (price.stone || 0) &&
-      //   (resources.food || 0) >= (price.food || 0) &&
-      //   (resources.gold || 0) >= (price.gold || 0)
-      // );
     },
     [resources]
   );

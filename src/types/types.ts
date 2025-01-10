@@ -1,21 +1,21 @@
-import { TileSectionType, TileSide } from "@/models/Tile";
+import { Tile, TileSectionType, TileSide } from "@/models/Tile";
 
 declare global {
   type Zones = {
     [TileSectionType.Forest]: {
-      hexes: { row: number; col: number; sides: TileSide[] }[];
+      hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
     [TileSectionType.Water]: {
-      hexes: { row: number; col: number; sides: TileSide[] }[];
+      hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
     [TileSectionType.Mountains]: {
-      hexes: { row: number; col: number; sides: TileSide[] }[];
+      hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
     [TileSectionType.City]: {
-      hexes: { row: number; col: number; sides: TileSide[] }[];
+      hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
     [TileSectionType.Plains]: {
-      hexes: { row: number; col: number; sides: TileSide[] }[];
+      hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
   };
   type ResourceNames = "wood" | "stone" | "food" | "gold";

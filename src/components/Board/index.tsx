@@ -168,7 +168,6 @@ const GameBoard = () => {
                       hexSize={hexSize!}
                       muted={false}
                       onClick={function(): void {
-                        // console.log("Filed tile clicked", rowIndex, colIndex);
                       }}
                     />
                     {isTileToxic(rowIndex, colIndex) && (

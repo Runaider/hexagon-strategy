@@ -38,10 +38,6 @@ function UpcomingTiles() {
   };
 
   const onUpcomingTileClick = (index: number) => {
-    // if (!canPriceBePaid(actionPrices!.changeUpcomingHex!)) {
-    //   return;
-    // }
-    // payPrice(actionPrices!.changeUpcomingHex!);
     setNextTileIndex(index);
   };
 
@@ -55,11 +51,9 @@ function UpcomingTiles() {
   );
 
   useEffect(() => {
-    // console.log("Adding key listener");
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      // console.log("Removing key listener");
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);

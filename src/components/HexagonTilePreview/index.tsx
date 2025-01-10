@@ -6,17 +6,23 @@ import HexagonTile from "../HexagonTile";
 type Props = {
   previewTile: Tile;
   hexSize: number;
+  isHighlighted: boolean;
   onClick: () => void;
 };
 
-function HexagonTilePreview({ previewTile, hexSize, onClick }: Props) {
-  const [isHoveredOver, setIsHoveredOver] = useState(false);
+function HexagonTilePreview({
+  previewTile,
+  hexSize,
+  isHighlighted,
+  onClick,
+}: Props) {
+  // const [isHoveredOver, setIsHoveredOver] = useState(false);
   return (
     <div
-      onMouseOver={() => setIsHoveredOver(true)}
-      onMouseOut={() => setIsHoveredOver(false)}
+    // onMouseOver={() => setIsHoveredOver(true)}
+    // onMouseOut={() => setIsHoveredOver(false)}
     >
-      {isHoveredOver ? (
+      {isHighlighted ? (
         <HexagonTile
           tile={previewTile}
           hexSize={hexSize}

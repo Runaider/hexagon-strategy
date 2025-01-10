@@ -2,16 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import HexagonTile from "../HexagonTile";
 import HexagonTilePreview from "../HexagonTilePreview";
 import classNames from "classnames";
-import { shuffle } from "lodash";
-import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { useAppConfig } from "@/contexts/appConfig";
 
 import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import { AnimatePresence, motion } from "framer-motion";
-import HexagonClouds from "../HexagonClouds";
-import { Resource } from "aws-cdk-lib";
-import ResourceIcon from "../ResourceIcon";
-import { IconBombFilled, IconBulldozer } from "@tabler/icons-react";
+
 import HexagonTileToxicOverlay from "../HexagonTileToxicOverlay";
 import CloudLayer from "../CloudLayer";
 
@@ -26,8 +21,6 @@ const GameBoard = () => {
     unlockedCells,
     cellValues,
     isTileToxic,
-    setCell,
-    removeCell,
     onTilePlace,
     getToxicTile,
     removeToxicTile,
@@ -167,8 +160,7 @@ const GameBoard = () => {
                       tile={cellValues[`${rowIndex},${colIndex}`]}
                       hexSize={hexSize!}
                       muted={false}
-                      onClick={function(): void {
-                      }}
+                      onClick={function(): void {}}
                     />
                     {isTileToxic(rowIndex, colIndex) && (
                       <HexagonTileToxicOverlay
@@ -186,11 +178,18 @@ const GameBoard = () => {
                         scale: [1, 0.9, 1.1, 1],
                       }}
                       transition={{ duration: 1, delay: 0.4 }}
+                      onMouseOver={() =>
+                        setHighlightedHexes([{ row: rowIndex, col: colIndex }])
+                      }
+                      onMouseOut={() => setHighlightedHexes([])}
                     >
                       <HexagonTilePreview
                         previewTile={nextTileToPlace}
                         hexSize={hexSize!}
                         onClick={() => onHexagonClick(rowIndex, colIndex)}
+                        isHighlighted={highlightedHexes.some(
+                          (hex) => hex.row === rowIndex && hex.col === colIndex
+                        )}
                       />
                     </motion.div>
                   </div>

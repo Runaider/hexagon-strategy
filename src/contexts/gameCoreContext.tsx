@@ -97,7 +97,7 @@ function GameCoreContextProvider({ children }: Props) {
   const [scoreLog, setScoreLog] = useState([] as string[]);
   const [currentTurn, setCurrentTurn] = useState(0);
 
-  const { zones, setZones } = useZoneTracker({
+  const { zones, completedZones, setZones } = useZoneTracker({
     rows: rows!,
     cols: cols!,
   });
@@ -142,6 +142,7 @@ function GameCoreContextProvider({ children }: Props) {
   } = UseTileManager({ allTiles });
 
   const {
+    toxicTiles,
     createToxicTile,
     isTileToxic,
     getToxicTile,
@@ -254,11 +255,24 @@ function GameCoreContextProvider({ children }: Props) {
   useEffect(() => {
     if (currentTurn == maxTurns && !isGameOver) {
       setIsGameOver(true);
-      const { score, scoreLog } = calculateScoreFromGridData(zones, []);
+      const { score, scoreLog } = calculateScoreFromGridData(
+        zones,
+        [],
+        toxicTiles,
+        completedZones
+      );
       setScore(score);
       setScoreLog(scoreLog);
     }
-  }, [currentTurn, isGameOver, maxTurns, resources.gold, zones]);
+  }, [
+    completedZones,
+    currentTurn,
+    isGameOver,
+    maxTurns,
+    resources.gold,
+    toxicTiles,
+    zones,
+  ]);
 
   useEffect(() => {
     if (isFirstTilePlaced && Object.keys(cellValues)?.length === 0) {
@@ -279,7 +293,7 @@ function GameCoreContextProvider({ children }: Props) {
     return () => {
       eventCleanup();
     };
-  }, [onEvent, onReset]);
+  }, [onEvent]);
 
   const contextValue = useMemo(
     () => ({

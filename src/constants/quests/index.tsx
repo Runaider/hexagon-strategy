@@ -13,8 +13,8 @@ const forestFireQuest = {
   actions: [
     {
       text: "Dispatch Firefighters",
-      subtext: "Lose 50 Gold and 10 Food",
-      price: { gold: 50, food: 10, wood: 0, stone: 0, _: 0 },
+      subtext: "Lose 5 Gold and 5 Food",
+      price: { gold: 5, food: 5, wood: 0, stone: 0, _: 0 },
     },
     {
       text: "Evacuate Nearby Settlements",

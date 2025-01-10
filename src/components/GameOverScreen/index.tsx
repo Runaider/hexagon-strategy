@@ -16,8 +16,8 @@ function GameOverScreen() {
           <div></div>
           <div className="m-4 shadow-border w-full">
             <Container bg="none">
-              <div className="flex flex-col  justify-center h-max-[100vh-75%] overflow-hidden pt-1 pb-2">
-                <div className="text-text-primary font-bold px-2 pt-1">
+              <div className="flex flex-col  h-max-[100vh-75%] overflow-hidden pt-1 pb-2">
+                <div className="flex justify-center text-lg text-text-primary font-bold px-2 pt-1">
                   Score: <span className="font-extrabold">{score}</span>
                 </div>
                 {scoreLog.map((log, index) => (

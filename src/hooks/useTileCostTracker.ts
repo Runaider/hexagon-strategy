@@ -41,6 +41,7 @@ function useTileCostTracker(
   const findResourceWitchCanPay = useCallback(() => {
     let resourceToUse: ResourceNames | null = null;
     ["wood", "stone", "food", "gold"].forEach((resource) => {
+      console.log(resource, resourcePrice[resource as ResourceNames]);
       if (canPriceBePaid({ [resource]: resourcePrice[resource] })) {
         resourceToUse = resource as ResourceNames;
       }

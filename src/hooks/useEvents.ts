@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
@@ -24,6 +25,7 @@ const useEventStore = create<EventState>()(
     events: [],
     callbacks: {},
     dispatch: <T>(event: string, data: T) => {
+      console.log("event", event, data);
       const newEvent = { event, data, created: Date.now() };
       set((state) => ({
         events: [...state.events, newEvent],
@@ -62,7 +64,14 @@ function useEvents() {
   const on = useEventStore((state) => state.on);
   const events = useEventStore((state) => state.events);
 
-  return { dispatch, on, events };
+  return useMemo(
+    () => ({
+      dispatch,
+      on,
+      events,
+    }),
+    [dispatch, on, events]
+  );
 }
 
 export default useEvents;

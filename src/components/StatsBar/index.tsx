@@ -3,6 +3,7 @@ import StatsBarItem from "../StatsBarItem";
 import { useAppConfig } from "@/contexts/appConfig";
 import { useMemo } from "react";
 import RollingNumber from "../RollingNumbers";
+import { motion } from "framer-motion";
 
 function StatsBar() {
   const {
@@ -28,14 +29,22 @@ function StatsBar() {
   return (
     <div className="w-screen h-10 bg-background-primary">
       <div className="absolute top-3 flex  shadow-filter-flat px-3">
-        <StatsBarItem
-          amount={wood!}
-          amountPerTurn={woodPerTurn!}
-          resource={"wood"}
-          showPerTurn={perTurnResourceProduction!}
-          isActive={resourceInUse === "wood"}
-          onClick={() => setTilePlaceActiveResource("wood")}
-        />
+        <motion.div
+          initial={{ translateY: -50 }}
+          animate={{
+            translateY: [-50, 15, 0],
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          <StatsBarItem
+            amount={wood!}
+            amountPerTurn={woodPerTurn!}
+            resource={"wood"}
+            showPerTurn={perTurnResourceProduction!}
+            isActive={resourceInUse === "wood"}
+            onClick={() => setTilePlaceActiveResource("wood")}
+          />
+        </motion.div>
         <div className=" mx-2" />
         <StatsBarItem
           amount={stone!}

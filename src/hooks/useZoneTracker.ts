@@ -4,6 +4,7 @@ import { cloneDeep } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useCellValueStore from "@/dataStores/cellValues";
 import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
+import { usePrevious } from "@mantine/hooks";
 
 const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   const cellValues = useCellValueStore((state) => state.values);
@@ -24,6 +25,14 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
     [TileSectionType.City]: [],
     [TileSectionType.Plains]: [],
   });
+
+  const completedZoneIds = useMemo(() => {
+    return Object.values(completedZones).flatMap((zoneList) =>
+      zoneList.map((zone) => zone.hexes.map((hex) => `${hex.row},${hex.col}`))
+    );
+  }, [completedZones]);
+  console.log(completedZoneIds);
+  const completedZoneIdsPrevious = usePrevious(completedZoneIds);
 
   const setZonesAfterTilePlacement = useCallback(
     (row: number, col: number, tile: Tile) => {
@@ -152,12 +161,39 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
         if (!isZoneComplete) {
           return;
         }
-        dispatch(EVENT_TYPES.ZONE_COMPLETE, { zone });
-        newZones[zoneType as TileSectionType].push(zone);
+        newZones[zoneType as TileSectionType].push(cloneDeep(zone));
       });
     });
     setCompletedZones(newZones);
   }, [cellValues, cols, dispatch, rows, zones]);
+
+  useEffect(() => {
+    // check if new zones are completed
+    if (completedZoneIds.length === completedZoneIdsPrevious?.length) {
+      return;
+    }
+    const newlyCompletedZones = completedZoneIds.filter(
+      (zoneId) => !completedZoneIdsPrevious?.includes(zoneId)
+    );
+
+    if (newlyCompletedZones.length === 0) {
+      return;
+    }
+
+    Object.entries(completedZones).forEach(([zoneType, zoneList]) => {
+      const completedZone = zoneList.find((zone) =>
+        zone.hexes.every((hex) =>
+          newlyCompletedZones.every((entry) =>
+            entry.includes(`${hex.row},${hex.col}`)
+          )
+        )
+      );
+      if (!completedZone) {
+        return;
+      }
+      dispatch(EVENT_TYPES.ZONE_COMPLETE, { zone: completedZone });
+    });
+  }, [completedZoneIds, completedZoneIdsPrevious, completedZones, dispatch]);
 
   return useMemo(
     () => ({ zones, completedZones, setZones: setZonesAfterTilePlacement }),

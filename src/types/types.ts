@@ -18,6 +18,12 @@ declare global {
       hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
     }[];
   };
+
+  // type Zones = {
+  //   type: TileSectionType;
+  //   hexes: { row: number; col: number; sides: TileSide[]; tile: Tile }[];
+  // }[];
+
   type ResourceNames = "wood" | "stone" | "food" | "gold";
 
   type ResourceProduction = {

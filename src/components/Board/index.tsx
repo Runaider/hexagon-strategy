@@ -30,67 +30,12 @@ const GameBoard = () => {
     { row: number; col: number }[]
   >([]);
 
-  // const {
-  //   toxicTiles,
-  //   addTile: addToxicTile,
-  //   removeTile: removeToxicTile,
-  // } = useToxicTileTracker({
-  //   setCell,
-  //   removeCell,
-  // });
-
-  // const onQuestComplete = useCallback(
-  //   (questId: string) => {
-  //     removeToxicTile(toxicTiles.find((tile) => tile.questId === questId)!);
-  //   },
-  //   [removeToxicTile, toxicTiles]
-  // );
-
-  // const { quests, addRandomQuest } = useQuests(
-  //   resources,
-  //   tileResourceProduction,
-  //   // zones,
-  //   onQuestComplete
-  // );
-
   const hexWidth = Math.sqrt(3) * hexSize!; // Width of each hexagon
   const hexHeight = 2 * hexSize!; // Height of each hexagon
   const xOffset = hexWidth;
   const yOffset = (3 / 4) * hexHeight; // Vertical distance between rows
 
   const grid = [];
-
-  // const placeToxicHexOnNearbyFreeHex = useCallback(
-  //   (row: number, col: number) => {
-  //     // place on a random nearby hex
-
-  //     const nearby = nearbyHexes(row, col, rows, cols);
-  //     for (const [nearbyRow, nearbyCol] of shuffle(nearby)) {
-  //       if (!cellValues[`${nearbyRow},${nearbyCol}`]) {
-  //         if (currentTurn <= maxTurns! - TOXIC_TILE_BUFFER) {
-  //           const { id: questId } = addRandomQuest();
-  //           addToxicTile({
-  //             row: nearbyRow,
-  //             col: nearbyCol,
-  //             questId: questId,
-  //             spawnedTurn: currentTurn,
-  //             destructionTurn: currentTurn + 3,
-  //           });
-  //         }
-  //         return;
-  //       }
-  //     }
-  //   },
-  //   [
-  //     addRandomQuest,
-  //     addToxicTile,
-  //     cellValues,
-  //     cols,
-  //     maxTurns,
-  //     currentTurn,
-  //     rows,
-  //   ]
-  // );
 
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
@@ -184,6 +129,8 @@ const GameBoard = () => {
                       onMouseOut={() => setHighlightedHexes([])}
                     >
                       <HexagonTilePreview
+                        row={rowIndex}
+                        col={colIndex}
                         previewTile={nextTileToPlace}
                         hexSize={hexSize!}
                         onClick={() => onHexagonClick(rowIndex, colIndex)}
@@ -210,123 +157,6 @@ const GameBoard = () => {
         grid.push(row);
         return row;
       })}
-      {/* Quests */}
-      <div
-        className="fixed   rounded-md flex text-md text-black"
-        style={{ left: "30px", top: "50%", transform: "translateY(-50%)" }}
-      >
-        {/* <div className="flex flex-col border p-4 shadow-md  bg-white rounded-md text-md">
-          Pending Quests:
-          {quests.map((quest, index) => (
-            <div
-              key={index}
-              className={classNames(
-                "ml-4",
-                quest.completed ? "line-through" : ""
-              )}
-            >
-              {quest.title}
-            </div>
-          ))}
-        </div> */}
-      </div>
-      {/* zone numbers */}
-      <div
-        className="fixed   rounded-md flex text-md text-black"
-        style={{ right: "30px", top: "50%", transform: "translateY(-50%)" }}
-      >
-        {/* <div className="flex flex-col border p-4 shadow-md  bg-white rounded-md text-md">
-          Forest:{" "}
-          <div className="flex flex-col">
-            {zones[TileSectionType.Forest].map((zone, index) => (
-              <div
-                key={index}
-                className="ml-4"
-                onMouseOver={() => {
-                  setHighlightedHexes(
-                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
-                  );
-                }}
-                onMouseOut={() => setHighlightedHexes([])}
-              >
-                #{index} - {zone.hexes.length}
-              </div>
-            ))}
-          </div>
-          <div className="w-4" />
-          Mountains:
-          <div className="flex flex-col">
-            {zones[TileSectionType.Mountains].map((zone, index) => (
-              <div
-                key={index}
-                className="ml-4"
-                onMouseOver={() => {
-                  setHighlightedHexes(
-                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
-                  );
-                }}
-                onMouseOut={() => setHighlightedHexes([])}
-              >
-                #{index} - {zone.hexes.length}
-              </div>
-            ))}
-          </div>
-          <div className="w-4" />
-          Plains:
-          <div className="flex flex-col">
-            {zones[TileSectionType.Plains].map((zone, index) => (
-              <div
-                key={index}
-                className="ml-4"
-                onMouseOver={() => {
-                  setHighlightedHexes(
-                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
-                  );
-                }}
-                onMouseOut={() => setHighlightedHexes([])}
-              >
-                #{index} - {zone.hexes.length}
-              </div>
-            ))}
-          </div>
-          <div className="w-4" />
-          Lakes:
-          <div className="flex flex-col">
-            {zones[TileSectionType.Water].map((zone, index) => (
-              <div
-                key={index}
-                className="ml-4"
-                onMouseOver={() => {
-                  setHighlightedHexes(
-                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
-                  );
-                }}
-                onMouseOut={() => setHighlightedHexes([])}
-              >
-                #{index} - {zone.hexes.length}
-              </div>
-            ))}
-          </div>
-          <div className="w-4" />
-          City:{" "}
-          <div className="flex flex-col">
-            {zones[TileSectionType.City].map((zone, index) => (
-              <div
-                key={index}
-                className="ml-4"
-                onMouseOver={() => {
-                  setHighlightedHexes(
-                    zone.hexes.map((hex) => ({ row: hex.row, col: hex.col }))
-                  );
-                }}
-                onMouseOut={() => setHighlightedHexes([])}
-              >
-                #{index} - {zone.hexes.length}
-              </div>
-            ))}
-          </div>
-        </div> */}
-      </div>
     </div>
   );
 };

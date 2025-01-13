@@ -49,13 +49,8 @@ const useScoreTracker = ({ rows, cols }: Props) => {
     return resourceCounts;
   }, [tileResourceProduction]);
 
-  const updateResourceCounts = useCallback(
-    (
-      newTileRow: number,
-      newTileCol: number,
-      newTile: Tile
-      // cellValues: { [key: string]: Tile }
-    ) => {
+  const getNewTileResourceProduction = useCallback(
+    (newTileRow: number, newTileCol: number, newTile: Tile) => {
       const tileResources = { ...tileResourceProduction };
 
       // const resourceCounts = { ...resourcesPerTurn };
@@ -114,9 +109,19 @@ const useScoreTracker = ({ rows, cols }: Props) => {
           };
         }
       });
-      setTileResourceProduction(tileResources);
+      return tileResources;
+      // setTileResourceProduction(tileResources);
     },
     [cellValues, cols, rows, tileResourceProduction]
+  );
+
+  const updateResourceCounts = useCallback(
+    (newTileRow: number, newTileCol: number, newTile: Tile) => {
+      setTileResourceProduction(
+        getNewTileResourceProduction(newTileRow, newTileCol, newTile)
+      );
+    },
+    [getNewTileResourceProduction]
   );
 
   const gainResources = useCallback(() => {
@@ -216,6 +221,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       updateResourceCounts,
       gainResources,
       gainResourcesFromAdjacentTiles,
+      getNewTileResourceProduction,
       resetStats,
     }),
     [
@@ -227,6 +233,7 @@ const useScoreTracker = ({ rows, cols }: Props) => {
       updateResourceCounts,
       gainResources,
       gainResourcesFromAdjacentTiles,
+      getNewTileResourceProduction,
       resetStats,
     ]
   );

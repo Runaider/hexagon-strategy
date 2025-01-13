@@ -48,6 +48,11 @@ type ContextValues = {
   nextTileToPlace: Tile;
 
   tilePlaceResourcePrice: ResourceProduction;
+  getNewTileResourceProduction: (
+    newTileRow: number,
+    newTileCol: number,
+    newTile: Tile
+  ) => { [x: string]: ResourceProduction };
   removeToxicTile: (row: number, col: number) => void;
   getToxicTile: (row: number, col: number) => ToxicTile | undefined;
   isTileToxic: (row: number, col: number) => boolean;
@@ -95,7 +100,7 @@ function GameCoreContextProvider({ children }: Props) {
   const [scoreLog, setScoreLog] = useState([] as string[]);
   const [currentTurn, setCurrentTurn] = useState(0);
 
-  const { zones, completedZones, setZones } = useZoneTracker({
+  const { zones, completedZones, resetZones, setZones } = useZoneTracker({
     rows: rows!,
     cols: cols!,
   });
@@ -111,6 +116,7 @@ function GameCoreContextProvider({ children }: Props) {
     gainResources,
     gainResourcesFromAdjacentTiles,
     resetStats,
+    getNewTileResourceProduction,
   } = useStatTracker({ rows: rows!, cols: cols! });
 
   const {
@@ -237,7 +243,8 @@ function GameCoreContextProvider({ children }: Props) {
     resetStats();
     resetTileCosts();
     resetTileManager();
-  }, [resetStats, resetTileCosts, resetTileManager]);
+    resetZones();
+  }, [resetStats, resetTileCosts, resetTileManager, resetZones]);
 
   useEffect(() => {
     if (isFirstTilePlaced) {
@@ -313,6 +320,7 @@ function GameCoreContextProvider({ children }: Props) {
       unlockedCells,
 
       tilePlaceResourcePrice: resourcePrice,
+      getNewTileResourceProduction,
       removeToxicTile,
       getToxicTile,
       setTilePlaceActiveResource: setActiveResource,
@@ -346,6 +354,7 @@ function GameCoreContextProvider({ children }: Props) {
       nextTileIndex,
       unlockedCells,
       resourcePrice,
+      getNewTileResourceProduction,
       removeToxicTile,
       getToxicTile,
       setActiveResource,

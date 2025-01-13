@@ -125,6 +125,23 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   // check if a zone is completed
   // if it is, add it to the completed zones
 
+  const resetZones = useCallback(() => {
+    setZones({
+      [TileSectionType.Forest]: [],
+      [TileSectionType.Water]: [],
+      [TileSectionType.Mountains]: [],
+      [TileSectionType.City]: [],
+      [TileSectionType.Plains]: [],
+    });
+    setCompletedZones({
+      [TileSectionType.Forest]: [],
+      [TileSectionType.Water]: [],
+      [TileSectionType.Mountains]: [],
+      [TileSectionType.City]: [],
+      [TileSectionType.Plains]: [],
+    });
+  }, []);
+
   useEffect(() => {
     const newZones = {
       [TileSectionType.Forest]: [],
@@ -196,8 +213,8 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   }, [completedZoneIds, completedZoneIdsPrevious, completedZones, dispatch]);
 
   return useMemo(
-    () => ({ zones, completedZones, setZones: setZonesAfterTilePlacement }),
-    [setZonesAfterTilePlacement, completedZones, zones]
+    () => ({ zones, completedZones, resetZones, setZones: setZonesAfterTilePlacement }),
+    [zones, completedZones, resetZones, setZonesAfterTilePlacement]
   );
 };
 

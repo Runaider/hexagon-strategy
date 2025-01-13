@@ -30,7 +30,9 @@ function HexagonTilePreview({
           onClick={onClick}
         />
       ) : (
-        <Hexagon size={hexSize} muted onClick={onClick} />
+        <div>
+          <Hexagon size={hexSize} muted onClick={onClick} />
+        </div>
       )}
     </div>
   );

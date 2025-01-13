@@ -9,7 +9,8 @@ import React, {
 import { useGameCoreContext } from "./gameCoreContext";
 import QuestModal from "@/components/QuestModal";
 import { useDisclosure } from "@mantine/hooks";
-import { forestFireQuest } from "@/constants/quests";
+import { allQuests } from "@/constants/quests";
+import { cloneDeep, shuffle } from "lodash";
 
 type Props = {
   children?: JSX.Element;
@@ -22,6 +23,8 @@ const QuestContext = createContext<ContextValues>({} as ContextValues);
 const useQuestContext = () => useContext(QuestContext);
 
 function QuestContextProvider({ children }: Props) {
+  const quests = useMemo(() => shuffle(cloneDeep(allQuests)), []);
+  const [currentQuest, setCurrentQuest] = useState(null);
   const [
     isQuestWindowOpened,
     { open: showQuest, close: hideQuest },
@@ -70,9 +73,13 @@ function QuestContextProvider({ children }: Props) {
 
   useEffect(() => {
     if (currentTurn == 5) {
+      if (quests.length < 1) {
+        return;
+      }
+      setCurrentQuest(quests.pop());
       showQuest();
     }
-  }, [currentTurn, showQuest]);
+  }, [currentTurn, quests, showQuest]);
 
   const contextValue = useMemo(() => ({}), []);
 
@@ -81,7 +88,7 @@ function QuestContextProvider({ children }: Props) {
       <QuestModal
         isVisible={isQuestWindowOpened}
         onClose={hideQuest}
-        quest={forestFireQuest}
+        quest={currentQuest}
         onActionClick={onQuestActionClick}
       />
       {children}

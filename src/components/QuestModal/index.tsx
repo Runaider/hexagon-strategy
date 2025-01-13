@@ -32,13 +32,15 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
       withCloseButton={false}
       closeOnClickOutside={false}
     >
-      <div className="m-4 shadow-border">
-        <Container>
-          <div className="flex items-center justify-center h-[200px] overflow-hidden">
-            <img src="./forest_fire.jpg" className="" />
-          </div>
-        </Container>
-      </div>
+      {quest.image && (
+        <div className="m-4 shadow-border">
+          <Container>
+            <div className="flex items-center justify-center h-[200px] overflow-hidden">
+              <img src={quest.image} className="" />
+            </div>
+          </Container>
+        </div>
+      )}
 
       <div className="m-4 shadow-border">
         <Container bg="none">

@@ -56,6 +56,7 @@ declare global {
   };
 
   type QuestInstant = {
+    image?: string;
     details: { text: string }[];
     actions: QuestInstantAction[];
   };

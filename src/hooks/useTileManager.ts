@@ -2,7 +2,7 @@ import { useAppConfig } from "@/contexts/appConfig";
 import { Tile, TileSectionType } from "@/models/Tile";
 import { getNearbyHexes } from "@/utils/nearbyHexes";
 import { cloneDeep, shuffle } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useCellValueStore from "@/dataStores/cellValues";
 
 type Props = {
@@ -113,10 +113,6 @@ function UseTileManager({ allTiles }: Props) {
       [TileSectionType.Water]: 0,
     });
   }, [allTiles, resetCellValues]);
-
-  // useEffect(() => {
-  //   console.log("cell values changed", cloneDeep(cellValues));
-  // }, [cellValues]);
 
   return useMemo(
     () => ({

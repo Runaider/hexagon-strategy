@@ -31,7 +31,7 @@ import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 //       gold: 1,
 //     },
 //   },
-// }
+// }#3f3937
 
 const schema = a.schema({
     AppConfig: a.model({

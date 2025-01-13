@@ -11,6 +11,7 @@ import QuestModal from "@/components/QuestModal";
 import { useDisclosure } from "@mantine/hooks";
 import { allQuests } from "@/constants/quests";
 import { cloneDeep, shuffle } from "lodash";
+import { useAppConfig } from "./appConfig";
 
 type Props = {
   children?: JSX.Element;
@@ -23,6 +24,7 @@ const QuestContext = createContext<ContextValues>({} as ContextValues);
 const useQuestContext = () => useContext(QuestContext);
 
 function QuestContextProvider({ children }: Props) {
+  const [questsShown, setQuestsShown] = useState(0);
   const quests = useMemo(() => shuffle(cloneDeep(allQuests)), []);
   const [currentQuest, setCurrentQuest] = useState(null);
   const [
@@ -35,6 +37,9 @@ function QuestContextProvider({ children }: Props) {
     removeCell,
     payPrice,
   } = useGameCoreContext();
+  const {
+    config: { maxQuestsPerGame, questProbability },
+  } = useAppConfig();
 
   const onQuestActionClick = useCallback(
     (action: QuestInstantAction) => {
@@ -72,14 +77,21 @@ function QuestContextProvider({ children }: Props) {
   );
 
   useEffect(() => {
-    if (currentTurn == 5) {
-      if (quests.length < 1) {
-        return;
+    if (questsShown < maxQuestsPerGame) {
+      if (Math.random() < questProbability) {
+        setCurrentQuest(quests.pop());
+        showQuest();
+        setQuestsShown((prev) => prev + 1);
       }
-      setCurrentQuest(quests.pop());
-      showQuest();
     }
-  }, [currentTurn, quests, showQuest]);
+  }, [
+    currentTurn,
+    maxQuestsPerGame,
+    questProbability,
+    quests,
+    questsShown,
+    showQuest,
+  ]);
 
   const contextValue = useMemo(() => ({}), []);
 

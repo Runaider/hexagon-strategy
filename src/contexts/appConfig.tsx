@@ -22,9 +22,12 @@ const defaultConfig = {
   rows: 25,
   cols: 25,
   hexSize: 50,
+  maxToxicTilesPerGame: 3,
   toxicTileProbability: 0.1,
   maxTurns: 20,
   previewTileCount: 3,
+  questProbability: 0.2,
+  maxQuestsPerGame: 3,
   perTurnResourceProduction: false,
   actionPrices: {
     rotate: {
@@ -80,7 +83,13 @@ function AppConfigProvider({ children }: Props) {
 
   return (
     <AppConfigContext.Provider value={contextValue}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? (
+        <div className="w-screen h-screen bg-background-primary">
+          <div className="absolute w-screen h-screen bg-[radial-gradient(circle,_#00000000,_#242424)]" />
+        </div>
+      ) : (
+        children
+      )}
     </AppConfigContext.Provider>
   );
 }

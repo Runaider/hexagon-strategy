@@ -3,7 +3,6 @@ import Button from "../Button";
 import { useGameRouterContext } from "@/contexts/gameRouterContext";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { set } from "lodash";
 
 function StartScreen() {
   const { onStartPress } = useGameRouterContext();
@@ -73,40 +72,50 @@ function StartScreen() {
         }}
         transition={{ duration: 0.5 }}
       />
+
       <div className="absolute flex flex-col items-center justify-center">
         <motion.div
-          className="text-[86px] text-background-secondary font-bold shadow-filter-flat"
-          animate={uiState}
-          variants={{
-            open: { opacity: 1 },
-            closed: { opacity: 0 },
+          className="flex flex-col items-center"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
           }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.3 }}
         >
-          WorldPatch
-        </motion.div>
-        <div className="mb-10" />
-        <motion.div
-          animate={uiState}
-          variants={{
-            open: { opacity: 1 },
-            closed: { opacity: 0 },
-          }}
-        >
-          <Button
-            size="xlarge"
-            elevated
-            padded
-            onClick={() => {
-              // onStartPress()
-              setUiState("closed");
-              setTimeout(() => {
-                onStartPress();
-              }, 1100);
+          <motion.div
+            className="text-[86px] text-background-secondary font-bold shadow-filter-flat"
+            animate={uiState}
+            variants={{
+              open: { opacity: 1 },
+              closed: { opacity: 0 },
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            WorldPatch
+          </motion.div>
+          <div className="mb-10" />
+          <motion.div
+            animate={uiState}
+            variants={{
+              open: { opacity: 1 },
+              closed: { opacity: 0 },
             }}
           >
-            START
-          </Button>
+            <Button
+              size="xlarge"
+              elevated
+              padded
+              onClick={() => {
+                // onStartPress()
+                setUiState("closed");
+                setTimeout(() => {
+                  onStartPress();
+                }, 600);
+              }}
+            >
+              START
+            </Button>
+          </motion.div>
         </motion.div>
       </div>
       {/* bg-radial-[at_25%_25%] from-background-primary to-[#242424] to-75% */}

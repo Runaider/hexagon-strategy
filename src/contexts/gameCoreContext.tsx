@@ -18,8 +18,6 @@ import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { getNearbyHexes } from "@/utils/nearbyHexes";
 import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
-// import { getNearbyHexes } from "@/utils/nearbyHexes";
-// import useCellValueStore from "src/dataStores/cellValues";
 
 type Props = {
   children?: JSX.Element;

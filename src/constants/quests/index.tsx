@@ -1,5 +1,5 @@
 const forestFireQuest = {
-  image: "./forest_fire.jpg",
+  image: "./quest_images/forest_fire.jpeg",
   details: [
     {
       text:
@@ -13,7 +13,7 @@ const forestFireQuest = {
 
   actions: [
     {
-      text: "./quest_images/Dispatch Firefighters",
+      text: "Dispatch Firefighters",
       subtext: "Lose 5 Gold and 5 Food",
       price: { gold: 5, food: 5, wood: 0, stone: 0, _: 0 },
     },
@@ -95,7 +95,7 @@ const floodWarningQuest = {
         {
           actionType: "remove",
           amount: 2,
-          tileSectionType: "plains",
+          tileSectionType: "Plains",
         },
       ],
     },

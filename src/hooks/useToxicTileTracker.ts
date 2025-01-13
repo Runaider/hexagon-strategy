@@ -27,7 +27,7 @@ const useToxicTileTracker = ({
   );
 
   const removeTile = useCallback(
-    (row: number, col: number) => {
+    (row: number, col: number, cb?: (price: ResourceProduction) => void) => {
       const tile = getToxicTile(row, col);
       if (!tile) {
         return;
@@ -36,6 +36,7 @@ const useToxicTileTracker = ({
       if (!canPriceBePaid(tile.priceToDestroy)) return;
 
       payPrice(tile.priceToDestroy);
+      cb?.(tile.priceToDestroy);
       setDestroyedToxicTiles((prev) => [...prev, tile]);
       setToxicTiles((prev) => prev.filter((t) => t !== tile));
 
@@ -47,8 +48,7 @@ const useToxicTileTracker = ({
   const isTileToxic = useCallback(
     (row: number, col: number) => {
       const isToxic = toxicTiles.some((t) => t.row === row && t.col === col);
-      if (isToxic) {
-      }
+
       return isToxic;
     },
     [toxicTiles]
@@ -92,6 +92,11 @@ const useToxicTileTracker = ({
     []
   );
 
+  const resetToxicTiles = useCallback(() => {
+    setToxicTiles([]);
+    setDestroyedToxicTiles([]);
+  }, []);
+
   return useMemo(
     () => ({
       toxicTiles,
@@ -99,8 +104,16 @@ const useToxicTileTracker = ({
       createToxicTile,
       removeTile,
       isTileToxic,
+      resetToxicTiles,
     }),
-    [toxicTiles, getToxicTile, createToxicTile, removeTile, isTileToxic]
+    [
+      toxicTiles,
+      resetToxicTiles,
+      getToxicTile,
+      createToxicTile,
+      removeTile,
+      isTileToxic,
+    ]
   );
 };
 

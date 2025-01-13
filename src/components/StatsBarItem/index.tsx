@@ -35,7 +35,7 @@ function StatsBarItem({
         <div className="p-2 bg-background-secondary  clipped-corner-medium">
           <div className="flex justify-between items-center min-w-[60px]">
             <div className="mr-1 font-bold text-lg">
-              <RollingNumber value={amount} />
+              <RollingNumber value={amount} delay={1} />
             </div>
             <ResourceIcon resource={resource} />
           </div>

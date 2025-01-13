@@ -49,7 +49,7 @@ function StartScreen() {
         }}
       />
       <motion.div
-        className="absolute w-screen h-[50vh] bottom-0 bg-background-primary"
+        className="absolute  w-screen h-[50vh] bottom-0 bg-background-primary"
         animate={uiState}
         initial={{ translateY: "0px" }}
         variants={{
@@ -64,7 +64,7 @@ function StartScreen() {
         }}
       />
       <motion.div
-        className="absolute w-screen h-screen bg-[radial-gradient(circle,_#00000000,_#242424)]"
+        className="absolute z-[300] w-screen h-screen bg-[radial-gradient(circle,_#00000000,_#242424)]"
         animate={uiState}
         variants={{
           open: { opacity: 1 },
@@ -73,7 +73,7 @@ function StartScreen() {
         transition={{ duration: 0.5 }}
       />
 
-      <div className="absolute flex flex-col items-center justify-center">
+      <div className="absolute z-[300] flex flex-col items-center justify-center">
         <motion.div
           className="flex flex-col items-center"
           initial={{ opacity: 0 }}

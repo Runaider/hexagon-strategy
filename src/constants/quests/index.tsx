@@ -130,7 +130,7 @@ const plaqueOutbreakQuest = {
 } as QuestInstant;
 
 const earthQuakeQuest = {
-  image: "./quest_images/earthquake.png",
+  image: "./quest_images/earthquake.jpeg",
   details: [
     { text: "An earthquake has struck the mountains!" },
     { text: "Reinforce the area or face further destruction." },

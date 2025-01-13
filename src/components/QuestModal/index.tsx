@@ -2,6 +2,8 @@ import { Modal } from "@mantine/core";
 import Container from "../Container";
 import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import classNames from "classnames";
+import { useResourceIconAnimationContext } from "@/contexts/resourceIconAnimationContext";
+import { useRef } from "react";
 
 type Props = {
   quest: QuestInstant;
@@ -11,11 +13,26 @@ type Props = {
 };
 
 function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
+  const { triggerBubble } = useResourceIconAnimationContext();
+  const actionRef = useRef<{ [x: string]: HTMLDivElement | null }>({});
   const { canPriceBePaid } = useGameCoreContext();
-  const _onActionClick = (action: QuestInstantAction) => {
+  const _onActionClick = (action: QuestInstantAction, index: number) => {
     if (action.price && !canPriceBePaid?.(action.price)) return;
+    if (action.price) {
+      Object.entries(action.price).forEach(([key, value]) => {
+        if (value) {
+          triggerBubble(
+            actionRef.current[index]!,
+            key as ResourceNames,
+            value,
+            "red"
+          );
+        }
+      });
+    }
     onActionClick(action);
-    onClose();
+    setTimeout(() => onClose(), 500);
+    // onClose();
   };
 
   if (!quest) return null;
@@ -35,7 +52,7 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
       {quest.image && (
         <div className="m-4 shadow-border">
           <Container>
-            <div className="flex items-center justify-center h-[200px] overflow-hidden">
+            <div className="flex items-center justify-center h-[300px] overflow-hidden">
               <img src={quest.image} className="" />
             </div>
           </Container>
@@ -57,16 +74,17 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
         </Container>
       </div>
       <div className="mb-4">
-        {quest.actions.map((action) => (
+        {quest.actions.map((action, index) => (
           <div
             key={action.text}
+            ref={(el) => (actionRef.current[index] = el)}
             className={classNames(
               "mx-4 mt-2 transition-all ",
               !action.price || canPriceBePaid?.(action.price)
                 ? "cursor-pointer hover:scale-105 hover:shadow-filter-flat "
                 : "cursor-not-allowed opacity-60"
             )}
-            onClick={() => _onActionClick(action)}
+            onClick={() => _onActionClick(action, index)}
           >
             <div className="shadow-border">
               <Container bg="none" fullWidth>

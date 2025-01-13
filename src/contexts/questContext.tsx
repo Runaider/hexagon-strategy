@@ -77,7 +77,7 @@ function QuestContextProvider({ children }: Props) {
   );
 
   useEffect(() => {
-    if (questsShown < maxQuestsPerGame) {
+    if (currentTurn > 5 && questsShown < maxQuestsPerGame!) {
       if (Math.random() < questProbability) {
         setCurrentQuest(quests.pop());
         showQuest();

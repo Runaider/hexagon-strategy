@@ -53,7 +53,11 @@ type ContextValues = {
     newTileCol: number,
     newTile: Tile
   ) => { [x: string]: ResourceProduction };
-  removeToxicTile: (row: number, col: number) => void;
+  removeToxicTile: (
+    row: number,
+    col: number,
+    cb?: (price: ResourceProduction) => void
+  ) => void;
   getToxicTile: (row: number, col: number) => ToxicTile | undefined;
   isTileToxic: (row: number, col: number) => boolean;
   setTilePlaceActiveResource: (resource: ResourceNames) => void;
@@ -151,6 +155,7 @@ function GameCoreContextProvider({ children }: Props) {
     isTileToxic,
     getToxicTile,
     removeTile: removeToxicTile,
+    resetToxicTiles,
   } = useToxicTileTracker({
     setCell,
     removeCell,
@@ -244,7 +249,14 @@ function GameCoreContextProvider({ children }: Props) {
     resetTileCosts();
     resetTileManager();
     resetZones();
-  }, [resetStats, resetTileCosts, resetTileManager, resetZones]);
+    resetToxicTiles();
+  }, [
+    resetStats,
+    resetTileCosts,
+    resetTileManager,
+    resetToxicTiles,
+    resetZones,
+  ]);
 
   useEffect(() => {
     if (isFirstTilePlaced) {

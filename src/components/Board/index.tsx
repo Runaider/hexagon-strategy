@@ -9,12 +9,14 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import HexagonTileToxicOverlay from "../HexagonTileToxicOverlay";
 import CloudLayer from "../CloudLayer";
+import { useResourceIconAnimationContext } from "@/contexts/resourceIconAnimationContext";
 
 const GameBoard = () => {
   const tileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const {
     config: { rows, cols, hexSize },
   } = useAppConfig();
+  const { setStartRef, triggerBubble } = useResourceIconAnimationContext();
 
   const {
     nextTileToPlace,
@@ -24,6 +26,7 @@ const GameBoard = () => {
     onTilePlace,
     getToxicTile,
     removeToxicTile,
+    getNewTileResourceProduction,
   } = useGameCoreContext();
 
   const [highlightedHexes, setHighlightedHexes] = useState<
@@ -37,11 +40,58 @@ const GameBoard = () => {
 
   const grid = [];
 
+  const onToxicHexagonClick = useCallback(
+    (row: number, col: number) => {
+      console.log("toxic hexagon clicked", row, col);
+      removeToxicTile(row, col, (price) => {
+        Object.entries(price).forEach(([key, value]) => {
+          if (value) {
+            triggerBubble(
+              tileRefs.current[`${row},${col}`]!,
+              key as ResourceNames,
+              value,
+              "red"
+            );
+          }
+        });
+      });
+    },
+    [removeToxicTile, triggerBubble]
+  );
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
+      if (tileRefs.current[`${row},${col}`]) {
+        const production = Object.entries(
+          getNewTileResourceProduction(row, col, nextTileToPlace)
+        ).reduce(
+          (acc, [key, value]) => {
+            console.log("key", key, "value", value);
+            Object.entries(value).forEach(([key, value]) => {
+              // @ts-ignore
+              if (acc[key] !== undefined) {
+                // @ts-ignore
+                acc[key] += value;
+              }
+            });
+            return acc;
+          },
+          { food: 0, gold: 0, stone: 0, wood: 0 }
+        );
+
+        Object.entries(production).forEach(([key, value]) => {
+          if (value) {
+            triggerBubble(
+              tileRefs.current[`${row},${col}`]!,
+              key as ResourceNames,
+              value,
+              "green"
+            );
+          }
+        });
+      }
       onTilePlace(row, col);
     },
-    [onTilePlace]
+    [getNewTileResourceProduction, nextTileToPlace, onTilePlace, triggerBubble]
   );
 
   const scrollToCenter = (key: string) => {
@@ -110,7 +160,7 @@ const GameBoard = () => {
                     {isTileToxic(rowIndex, colIndex) && (
                       <HexagonTileToxicOverlay
                         toxicTile={getToxicTile(rowIndex, colIndex)!}
-                        onClick={() => removeToxicTile(rowIndex, colIndex)}
+                        onClick={() => onToxicHexagonClick(rowIndex, colIndex)}
                       />
                     )}
                   </motion.div>

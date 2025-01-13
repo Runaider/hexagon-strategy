@@ -13,6 +13,7 @@ import { QuestContextProvider } from "./contexts/questContext";
 import GameLayout from "./components/GameLayout";
 import { GameRouterProvider } from "./contexts/gameRouterContext";
 import StartScreen from "./components/StartScrean";
+import { ResourceIconAnimationProvider } from "./contexts/resourceIconAnimationContext";
 
 Amplify.configure(outputs);
 
@@ -21,13 +22,15 @@ createRoot(document.getElementById("root")!).render(
   <MantineProvider defaultColorScheme="dark">
     <AppConfigProvider>
       <GameCoreContextProvider>
-        <QuestContextProvider>
-          <GameRouterProvider
-            menu={<StartScreen />}
-            game={<GameLayout />}
-            leaderboard={<></>}
-          ></GameRouterProvider>
-        </QuestContextProvider>
+        <ResourceIconAnimationProvider>
+          <QuestContextProvider>
+            <GameRouterProvider
+              menu={<StartScreen />}
+              game={<GameLayout />}
+              leaderboard={<></>}
+            ></GameRouterProvider>
+          </QuestContextProvider>
+        </ResourceIconAnimationProvider>
       </GameCoreContextProvider>
     </AppConfigProvider>
   </MantineProvider>

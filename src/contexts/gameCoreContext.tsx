@@ -18,6 +18,7 @@ import { calculateScoreFromGridData } from "@/utils/calculateScoreFromGridData";
 import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { getNearbyHexes } from "@/utils/nearbyHexes";
 import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
+import { useSoundContext } from "./soundContext";
 
 type Props = {
   children?: JSX.Element;
@@ -190,18 +191,6 @@ function GameCoreContextProvider({ children }: Props) {
         incrementResourceUsedTimes();
       }
 
-      // if (currentTurn === 5) {
-      //   const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
-      //   for (const hex of nearbyHexes) {
-      //     const freeHex = !cellValues[`${hex[0]},${hex[1]}`];
-      //     if (freeHex) {
-      //       const tile = createToxicTile(hex[0], hex[1], currentTurn);
-      //       setCell(tile.row, tile.col, Tile_TOXIC);
-      //       break;
-      //     }
-      //   }
-      // }
-
       if (Math.random() < toxicTileProbability!) {
         const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
         for (const hex of nearbyHexes) {
@@ -242,9 +231,6 @@ function GameCoreContextProvider({ children }: Props) {
 
   const onTileRemove = useCallback(
     (row: number, col: number, tile: Tile) => {
-      // const newCellValues = removeCell(row, col);
-      // updateSectionCounts(tile);
-      // setZones(row, col, tile, newCellValues);
       removeCell(row, col);
       updateSectionCounts(tile);
       setZones(row, col, tile);

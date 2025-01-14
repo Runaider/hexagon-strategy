@@ -12,6 +12,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { allQuests } from "@/constants/quests";
 import { cloneDeep, shuffle } from "lodash";
 import { useAppConfig } from "./appConfig";
+import { useSoundContext } from "./soundContext";
 
 type Props = {
   children?: JSX.Element;
@@ -24,6 +25,7 @@ const QuestContext = createContext<ContextValues>({} as ContextValues);
 const useQuestContext = () => useContext(QuestContext);
 
 function QuestContextProvider({ children }: Props) {
+  const { playTileDestroySound } = useSoundContext();
   const [questsShown, setQuestsShown] = useState(0);
   const quests = useMemo(() => shuffle(cloneDeep(allQuests)), []);
   const [currentQuest, setCurrentQuest] = useState(null);
@@ -69,6 +71,7 @@ function QuestContextProvider({ children }: Props) {
                 }
               }
             }
+            playTileDestroySound();
           }
         });
       }

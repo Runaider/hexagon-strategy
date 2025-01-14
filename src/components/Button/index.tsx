@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Container from "../Container";
 import classNames from "classnames";
+import { useSoundContext } from "@/contexts/soundContext";
 
 type Props = {
   children: React.ReactNode;
@@ -19,6 +20,11 @@ function Button({
   padded,
   onClick,
 }: Props) {
+  const { playButtonSound } = useSoundContext();
+  const onPress = () => {
+    playButtonSound();
+    onClick?.();
+  };
   return (
     <div
       className={classNames(
@@ -30,7 +36,7 @@ function Button({
         <motion.button
           whileHover={{ scale: 1.2 }}
           whileTap={{ scale: 0.8 }}
-          onClick={onClick}
+          onClick={onPress}
           className={classNames(fullWidth && "w-full")}
         >
           <Container bg="none" fullWidth={fullWidth}>

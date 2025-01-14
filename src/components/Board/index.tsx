@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import HexagonTileToxicOverlay from "../HexagonTileToxicOverlay";
 import CloudLayer from "../CloudLayer";
 import { useResourceIconAnimationContext } from "@/contexts/resourceIconAnimationContext";
+import { useSoundContext } from "@/contexts/soundContext";
 
 const GameBoard = () => {
   const tileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -17,7 +18,7 @@ const GameBoard = () => {
     config: { rows, cols, hexSize },
   } = useAppConfig();
   const { setStartRef, triggerBubble } = useResourceIconAnimationContext();
-
+  const { playTilePlacementSound, playTileDestroySound } = useSoundContext();
   const {
     nextTileToPlace,
     unlockedCells,
@@ -54,9 +55,10 @@ const GameBoard = () => {
             );
           }
         });
+        playTileDestroySound();
       });
     },
-    [removeToxicTile, triggerBubble]
+    [playTileDestroySound, removeToxicTile, triggerBubble]
   );
   const onHexagonClick = useCallback(
     (row: number, col: number) => {
@@ -88,10 +90,17 @@ const GameBoard = () => {
             );
           }
         });
+        playTilePlacementSound();
       }
       onTilePlace(row, col);
     },
-    [getNewTileResourceProduction, nextTileToPlace, onTilePlace, triggerBubble]
+    [
+      getNewTileResourceProduction,
+      nextTileToPlace,
+      onTilePlace,
+      playTilePlacementSound,
+      triggerBubble,
+    ]
   );
 
   const scrollToCenter = (key: string) => {

@@ -4,6 +4,7 @@ import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import classNames from "classnames";
 import { useResourceIconAnimationContext } from "@/contexts/resourceIconAnimationContext";
 import { useRef } from "react";
+import { useSoundContext } from "@/contexts/soundContext";
 
 type Props = {
   quest: QuestInstant;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
+  const { playButtonSound } = useSoundContext();
   const { triggerBubble } = useResourceIconAnimationContext();
   const actionRef = useRef<{ [x: string]: HTMLDivElement | null }>({});
   const { canPriceBePaid } = useGameCoreContext();
@@ -30,6 +32,7 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
         }
       });
     }
+    playButtonSound();
     onActionClick(action);
     setTimeout(() => onClose(), 500);
     // onClose();

@@ -10,6 +10,7 @@ import React, {
 import { motion } from "framer-motion";
 import { isEqual, shuffle } from "lodash";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { useSoundContext } from "./soundContext";
 
 // resourceIconAnimationContext
 type Bubble = {
@@ -47,6 +48,8 @@ function ResourceIconAnimationProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { playStatChangeSound } = useSoundContext();
+
   const endWoodRef = useRef<HTMLElement | null>(null);
   const endStoneRef = useRef<HTMLElement | null>(null);
   const endFoodRef = useRef<HTMLElement | null>(null);
@@ -120,9 +123,13 @@ function ResourceIconAnimationProvider({
     }
   };
 
-  const onAnimationComplete = useCallback((id: string) => {
-    setBubbles((prev) => prev.filter((b) => b.id !== id));
-  }, []);
+  const onAnimationComplete = useCallback(
+    (id: string) => {
+      playStatChangeSound();
+      setBubbles((prev) => prev.filter((b) => b.id !== id));
+    },
+    [playStatChangeSound]
+  );
 
   const contextValue = useMemo(
     () => ({

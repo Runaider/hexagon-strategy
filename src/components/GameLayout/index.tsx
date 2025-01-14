@@ -3,6 +3,7 @@ import GameBoard from "../Board";
 import StatsBar from "../StatsBar";
 import UpcomingTiles from "../UpcomingTiles";
 import { useRef } from "react";
+import MusicToggle from "../MusicToggle";
 
 function GameLayout() {
   const { setScrollRef } = useResourceIconAnimationContext();
@@ -33,6 +34,10 @@ function GameLayout() {
         style={{ bottom: "0", left: "50%", transform: "translateX(-50%)" }}
       >
         <UpcomingTiles />
+      </div>
+
+      <div className="fixed bottom-4 right-4 z-10">
+        <MusicToggle />
       </div>
     </div>
   );

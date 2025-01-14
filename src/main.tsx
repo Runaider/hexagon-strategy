@@ -15,6 +15,7 @@ import { GameRouterProvider } from "./contexts/gameRouterContext";
 import StartScreen from "./components/StartScrean";
 import { ResourceIconAnimationProvider } from "./contexts/resourceIconAnimationContext";
 import { TutorialContextProvider } from "./contexts/tutorialContext";
+import { SoundContextProvider } from "./contexts/soundContext";
 
 Amplify.configure(outputs);
 
@@ -22,21 +23,23 @@ createRoot(document.getElementById("root")!).render(
   // <StrictMode>
   <MantineProvider defaultColorScheme="dark">
     <AppConfigProvider>
-      <GameCoreContextProvider>
-        <ResourceIconAnimationProvider>
-          <QuestContextProvider>
-            <GameRouterProvider
-              menu={<StartScreen />}
-              game={
-                <TutorialContextProvider>
-                  <GameLayout />
-                </TutorialContextProvider>
-              }
-              leaderboard={<></>}
-            ></GameRouterProvider>
-          </QuestContextProvider>
-        </ResourceIconAnimationProvider>
-      </GameCoreContextProvider>
+      <SoundContextProvider>
+        <GameCoreContextProvider>
+          <ResourceIconAnimationProvider>
+            <QuestContextProvider>
+              <GameRouterProvider
+                menu={<StartScreen />}
+                game={
+                  <TutorialContextProvider>
+                    <GameLayout />
+                  </TutorialContextProvider>
+                }
+                leaderboard={<></>}
+              ></GameRouterProvider>
+            </QuestContextProvider>
+          </ResourceIconAnimationProvider>
+        </GameCoreContextProvider>
+      </SoundContextProvider>
     </AppConfigProvider>
   </MantineProvider>
   // </StrictMode>

@@ -3,11 +3,23 @@ import Button from "../Button";
 import { useGameRouterContext } from "@/contexts/gameRouterContext";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useSoundContext } from "@/contexts/soundContext";
 
 function StartScreen() {
   const { onStartPress } = useGameRouterContext();
   const [uiState, setUiState] = useState("open");
   const [translateYValues, setTranslateYValues] = useState<string[]>([]);
+  const { isMusicOn, playGameMusic } = useSoundContext();
+
+  const onStart = () => {
+    if (isMusicOn) {
+      playGameMusic();
+    }
+    setUiState("closed");
+    setTimeout(() => {
+      onStartPress();
+    }, 600);
+  };
 
   useEffect(() => {
     const vh = window.innerHeight / 100;
@@ -101,18 +113,7 @@ function StartScreen() {
               closed: { opacity: 0 },
             }}
           >
-            <Button
-              size="xlarge"
-              elevated
-              padded
-              onClick={() => {
-                // onStartPress()
-                setUiState("closed");
-                setTimeout(() => {
-                  onStartPress();
-                }, 600);
-              }}
-            >
+            <Button size="xlarge" elevated padded onClick={onStart}>
               START
             </Button>
           </motion.div>

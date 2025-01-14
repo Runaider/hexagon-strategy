@@ -31,7 +31,8 @@ function RollingNumber({ value, delay }: Props) {
       initial={{ scale: 1 }}
       animate={{
         scale:
-          previousValue !== undefined && value > previousValue
+          previousValue !== undefined &&
+          (value > previousValue || value < previousValue)
             ? [1, 1.3, 1]
             : 1,
 
@@ -44,8 +45,8 @@ function RollingNumber({ value, delay }: Props) {
         duration: 1,
         ease: "easeOut",
         scale: {
-          repeat: Math.abs((previousValue ?? 0) - value),
-          duration: 0.08,
+          repeat: Math.abs((previousValue ?? 0) - value) - 1,
+          duration: 0.1,
           delay: delay ?? 0,
         },
       }}

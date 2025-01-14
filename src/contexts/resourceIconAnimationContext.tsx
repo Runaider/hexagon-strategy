@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { motion } from "framer-motion";
 import { isEqual, shuffle } from "lodash";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 
 // resourceIconAnimationContext
 type Bubble = {
@@ -186,19 +187,26 @@ const Bubble = memo(
           delay: bubble.delay,
           repeat: 0,
         }}
+        className="flex items-center justify-center border-[1px] border-solid border-black"
         style={{
           position: "absolute",
           zIndex: 1000,
-          width: "10px",
-          height: "10px",
-          background: bubble.color === "green" ? "#dfc89d" : "red",
+          width: "12px",
+          height: "12px",
+          background: bubble.color === "green" ? "#dfc89d" : "#a59192",
           borderRadius: "50%",
           pointerEvents: "none",
         }}
         onAnimationComplete={() => {
           onAnimationComplete(bubble.id);
         }}
-      />
+      >
+        {bubble.color === "green" ? (
+          <IconPlus className="w-4 h-4" stroke={3} color="#3f3937" />
+        ) : (
+          <IconMinus className="w-4 h-4" stroke={3} color="#3f3937" />
+        )}
+      </motion.div>
     );
   },
   isEqual

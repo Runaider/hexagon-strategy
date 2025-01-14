@@ -126,7 +126,14 @@ function StatsBar() {
           />
         </motion.div>
       </div>
-      <div className={"absolute top-3 right-3"}>
+      <motion.div
+        initial={{ translateY: -50 }}
+        animate={{
+          translateY: [-70, 15, 0],
+        }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="absolute top-3 right-3"
+      >
         <div className="p-2 bg-background-secondary  clipped-corner-medium">
           <div className="flex justify-between items-center min-w-[60px]">
             <div className=" font-bold text-lg">Turn:</div>
@@ -136,7 +143,7 @@ function StatsBar() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -25,7 +25,7 @@ function QuestModal({ quest, isVisible, onClose, onActionClick }: Props) {
             actionRef.current[index]!,
             key as ResourceNames,
             value,
-            "red"
+            value > 0 ? "red" : "green"
           );
         }
       });

@@ -1,3 +1,4 @@
+// Negative Quests
 const forestFireQuest = {
   image: "./quest_images/forest_fire.jpeg",
   details: [
@@ -283,6 +284,120 @@ const festivalPreparationQuest = {
       tileModifications: [],
     },
   ],
+} as QuestInstant;
+
+// Positive Quests
+const lumberBoonQuest = {
+  image: "./quest_images/lumber_boon.jpeg",
+  details: [
+    { text: "A nearby forest has grown rapidly!" },
+    { text: "You can harvest the extra wood for your needs." },
+  ],
+  actions: [
+    {
+      text: "Harvest extra wood",
+      subtext: "Gain 10 wood.",
+      tileModifications: [],
+      price: { wood: -10 },
+    },
+  ],
+} as QuestInstant;
+
+const goldVeinsQuest = {
+  image: "./quest_images/gold_veins.jpeg",
+  details: [
+    { text: "Gold veins discovered in the mountains!" },
+    { text: "Extract the gold to boost your economy." },
+  ],
+  actions: [
+    {
+      text: "Mine the gold",
+      subtext: "Gain 7 gold.",
+      tileModifications: [],
+      price: { gold: -7 },
+    },
+  ],
+} as QuestInstant;
+
+const grainSurplusQuest = {
+  image: "./quest_images/grain_surplus.jpeg",
+  details: [
+    { text: "Bountiful harvest in the plains!" },
+    { text: "Sell the extra grain for profit or store it for later." },
+  ],
+  actions: [
+    {
+      text: "Sell the grain",
+      subtext: "Convert 10 grain into 7 gold.",
+      tileModifications: [],
+      price: { grain: 10, gold: -7 },
+    },
+    {
+      text: "Store the grain",
+      subtext: "Gain 10 grain.",
+      tileModifications: [],
+      price: { food: -10 },
+    },
+  ],
+} as QuestInstant;
+
+const stoneDonationQuest = {
+  image: "./quest_images/stone_donation.jpeg",
+  details: [
+    { text: "A nearby village wants to contribute to your cause." },
+    { text: "They offer stone to aid your construction efforts." },
+  ],
+  actions: [
+    {
+      text: "Accept the gift",
+      subtext: "Gain 8 stone.",
+      tileModifications: [],
+      price: { stone: -8 },
+    },
+  ],
+} as QuestInstant;
+
+const resourceExchangeQuest = {
+  image: "./quest_images/resource_exchange.jpeg",
+  details: [
+    { text: "A trading caravan passes by!" },
+    { text: "You can trade one resource type for another." },
+  ],
+  actions: [
+    {
+      text: "Trade wood for stone",
+      subtext: "Convert 10 wood into 10 stone.",
+      tileModifications: [],
+      price: { wood: 10, stone: -10 },
+    },
+    {
+      text: "Trade gold for grain",
+      subtext: "Convert 10 gold into 20 grain.",
+      tileModifications: [],
+      price: { gold: 10, food: -20 },
+    },
+    {
+      text: "Do not trade",
+      subtext: "No cost",
+      tileModifications: [],
+    },
+  ],
+};
+
+const miningInovationQuest = {
+  image: "./quest_images/mining_inovation.jpeg",
+  details: [
+    { text: "Your miners have developed new tools!" },
+    { text: "This increases your stone production." },
+  ],
+  actions: [
+    {
+      text: "Boost mining efficiency",
+      subtext: "Gain 12 stone.",
+      tileModifications: [],
+      price: { stone: -12 },
+    },
+  ],
 };
 
 const allQuests = [
@@ -296,6 +411,14 @@ const allQuests = [
   goldMineCollapseQuest,
   wildAnimalAttackQuest,
   festivalPreparationQuest,
+  // ====================
+  lumberBoonQuest,
+  goldVeinsQuest,
+  grainSurplusQuest,
+  stoneDonationQuest,
+  stoneDonationQuest,
+  resourceExchangeQuest,
+  miningInovationQuest,
 ];
 
 export {

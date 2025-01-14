@@ -102,7 +102,7 @@ function ResourceIconAnimationProvider({
       const start = startR.getBoundingClientRect();
       const end = endRef!.current.getBoundingClientRect();
 
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < Math.abs(count); i++) {
         setBubbles((prev) => [
           ...prev,
           {
@@ -193,7 +193,7 @@ const Bubble = memo(
           zIndex: 1000,
           width: "12px",
           height: "12px",
-          background: bubble.color === "green" ? "#dfc89d" : "#a59192",
+          background: bubble.color === "green" ? "#dfc89d" : "#b3453f",
           borderRadius: "50%",
           pointerEvents: "none",
         }}

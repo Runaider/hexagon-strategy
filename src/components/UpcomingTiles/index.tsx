@@ -3,13 +3,13 @@ import { useGameCoreContext } from "@/contexts/gameCoreContext";
 import classNames from "classnames";
 import HexagonTile from "../HexagonTile";
 import { useCallback, useEffect } from "react";
-import useTileCostTracker from "@/hooks/useTileCostTracker";
 import ResourceIcon from "../ResourceIcon";
 import RollingNumber from "../RollingNumbers";
+import { motion } from "framer-motion";
 
 function UpcomingTiles() {
   const {
-    config: { previewTileCount, perTurnResourceProduction, actionPrices },
+    config: { previewTileCount, actionPrices },
   } = useAppConfig();
 
   const {
@@ -60,40 +60,45 @@ function UpcomingTiles() {
 
   return (
     <div className=" flex flex-col items-center w-screen h-10 bg-background-primary">
-      <div className="relative flex items-center justify-center shadow-filter-flat">
-        <div className="absolute flex items-center z-20 top-[-110px] right-[-170px] px-2 py-1 clipped-corner-medium bg-background-primary text-text-primary text-xl font-bold">
-          {/* {resourceAmount}{" "} */}
-          <RollingNumber value={resourceAmount!} />
-          <span className="ml-1">
-            <ResourceIcon resource={resourceName} size="small" />
-          </span>
-        </div>
-        <div
-          className="absolute flex p-4 bg-background-secondary top-[-90px]  clipped-corner-medium"
-          //   style={{ transform: "translateX(-50%)" }}
-        >
-          {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
-            <div key={index} className="flex">
-              <div className="w-4 " />
-              <div
-                className={classNames(
-                  "transition-transform cursor-pointer",
-                  nextTileIndex == index ? "scale-110" : "",
-                  nextTileIndex != index ? "opacity-50" : "",
-                  "hover:opacity-100"
-                )}
-              >
-                <HexagonTile
-                  tile={tile}
-                  hexSize={40}
-                  muted={false}
-                  onClick={() => onUpcomingTileClick(index)}
-                />
+      <motion.div
+        initial={{ translateY: 250 }}
+        animate={{
+          translateY: [250, -15, 0],
+        }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <div className="relative flex items-center justify-center shadow-filter-flat">
+          <div className="absolute flex items-center z-20 top-[-110px] right-[-170px] px-2 py-1 clipped-corner-medium bg-background-primary text-text-primary text-xl font-bold">
+            -<RollingNumber value={resourceAmount!} />
+            <span className="ml-1">
+              <ResourceIcon resource={resourceName} size="small" />
+            </span>
+          </div>
+
+          <div className="absolute flex p-4 bg-background-secondary top-[-90px]  clipped-corner-medium">
+            {upcomingTiles.slice(0, previewTileCount!).map((tile, index) => (
+              <div key={index} className="flex">
+                <div className="w-4 " />
+                <div
+                  className={classNames(
+                    "transition-transform cursor-pointer",
+                    nextTileIndex == index ? "scale-110" : "",
+                    nextTileIndex != index ? "opacity-50" : "",
+                    "hover:opacity-100"
+                  )}
+                >
+                  <HexagonTile
+                    tile={tile}
+                    hexSize={40}
+                    muted={false}
+                    onClick={() => onUpcomingTileClick(index)}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

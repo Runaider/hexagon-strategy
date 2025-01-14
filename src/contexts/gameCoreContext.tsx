@@ -19,6 +19,7 @@ import useToxicTileTracker from "@/hooks/useToxicTileTracker";
 import { getNearbyHexes } from "@/utils/nearbyHexes";
 import useEvents, { EVENT_TYPES } from "@/hooks/useEvents";
 import { useSoundContext } from "./soundContext";
+import { set } from "lodash";
 
 type Props = {
   children?: JSX.Element;
@@ -94,12 +95,13 @@ function GameCoreContextProvider({ children }: Props) {
       perTurnResourceProduction,
       maxTurns,
       toxicTileProbability,
+      maxToxicTilesPerGame,
     },
   } = useAppConfig();
 
   const { on: onEvent } = useEvents();
   const [isFirstTilePlaced, setIsFirstTilePlaced] = useState(false);
-
+  const [placedToxicTiles, setPlacedToxicTiles] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [scoreLog, setScoreLog] = useState([] as string[]);
@@ -191,8 +193,13 @@ function GameCoreContextProvider({ children }: Props) {
         incrementResourceUsedTimes();
       }
 
-      if (Math.random() < toxicTileProbability!) {
+      if (
+        currentTurn > 3 &&
+        Math.random() < toxicTileProbability! &&
+        placedToxicTiles < maxToxicTilesPerGame!
+      ) {
         const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
+        setPlacedToxicTiles((prev) => prev + 1);
         for (const hex of nearbyHexes) {
           const freeHex = !cellValues[`${hex[0]},${hex[1]}`];
           if (freeHex) {
@@ -214,11 +221,13 @@ function GameCoreContextProvider({ children }: Props) {
       currentTurn,
       gainResourcesFromAdjacentTiles,
       incrementResourceUsedTimes,
+      maxToxicTilesPerGame,
       moveUpcomingTiles,
       nextTileToPlace,
       onTurnChange,
       payPrice,
       perTurnResourceProduction,
+      placedToxicTiles,
       resourcePrice,
       rows,
       setCell,
@@ -248,6 +257,7 @@ function GameCoreContextProvider({ children }: Props) {
     resetTileManager();
     resetZones();
     resetToxicTiles();
+    setPlacedToxicTiles(0);
   }, [
     resetStats,
     resetTileCosts,
@@ -302,7 +312,7 @@ function GameCoreContextProvider({ children }: Props) {
   // register event listeners
   useEffect(() => {
     const eventCleanup = onEvent(EVENT_TYPES.ZONE_COMPLETE, ({ zone }) => {
-      console.log("Zone complete event received", zone);
+      // console.log("Zone complete event received", zone);
     });
 
     return () => {

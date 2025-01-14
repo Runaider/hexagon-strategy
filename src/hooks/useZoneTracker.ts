@@ -31,7 +31,6 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
       zoneList.map((zone) => zone.hexes.map((hex) => `${hex.row},${hex.col}`))
     );
   }, [completedZones]);
-  console.log(completedZoneIds);
   const completedZoneIdsPrevious = usePrevious(completedZoneIds);
 
   const setZonesAfterTilePlacement = useCallback(
@@ -213,7 +212,12 @@ const useZoneTracker = ({ rows, cols }: { rows: number; cols: number }) => {
   }, [completedZoneIds, completedZoneIdsPrevious, completedZones, dispatch]);
 
   return useMemo(
-    () => ({ zones, completedZones, resetZones, setZones: setZonesAfterTilePlacement }),
+    () => ({
+      zones,
+      completedZones,
+      resetZones,
+      setZones: setZonesAfterTilePlacement,
+    }),
     [zones, completedZones, resetZones, setZonesAfterTilePlacement]
   );
 };

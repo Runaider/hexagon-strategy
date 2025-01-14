@@ -59,12 +59,8 @@ function SoundContextProvider({ children }: Props) {
   }, [tileDestroySound]);
 
   const playStatChangeSound = useCallback(() => {
-    // statChangeSound.currentTime = 0.2;
-    // statChangeSound.play();
-    // console.log("stat change sound");
     const soundInstance = new Audio("./music/stat_change_1.mp3");
     soundInstance.play();
-    console.log("stat change sound");
   }, []);
 
   const playButtonSound = useCallback(() => {

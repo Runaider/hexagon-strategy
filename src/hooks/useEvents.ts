@@ -25,7 +25,6 @@ const useEventStore = create<EventState>()(
     events: [],
     callbacks: {},
     dispatch: <T>(event: string, data: T) => {
-      console.log("event", event, data);
       const newEvent = { event, data, created: Date.now() };
       set((state) => ({
         events: [...state.events, newEvent],

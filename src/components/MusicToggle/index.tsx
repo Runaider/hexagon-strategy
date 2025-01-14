@@ -3,7 +3,6 @@ import { IconBombFilled, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 
 function MusicToggle() {
   const { isMusicOn, toggleMusic } = useSoundContext();
-  console.log("MusicToggle -> isMusicOn", isMusicOn);
   return (
     <div
       className="cursor-pointer hover:scale-125 transition-all p-2 rounded-full bg-background-primary"

@@ -30,7 +30,6 @@ function HexagonTilePreview({
         getNewTileResourceProduction(row, col, previewTile)
       ).reduce(
         (acc, [key, value]) => {
-          console.log("key", key, "value", value);
           Object.entries(value).forEach(([key, value]) => {
             // @ts-ignore
             if (acc[key] !== undefined) {

@@ -43,7 +43,6 @@ const GameBoard = () => {
 
   const onToxicHexagonClick = useCallback(
     (row: number, col: number) => {
-      console.log("toxic hexagon clicked", row, col);
       removeToxicTile(row, col, (price) => {
         Object.entries(price).forEach(([key, value]) => {
           if (value) {
@@ -67,7 +66,6 @@ const GameBoard = () => {
           getNewTileResourceProduction(row, col, nextTileToPlace)
         ).reduce(
           (acc, [key, value]) => {
-            console.log("key", key, "value", value);
             Object.entries(value).forEach(([key, value]) => {
               // @ts-ignore
               if (acc[key] !== undefined) {

@@ -1,3 +1,4 @@
+import { shuffle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const PRICE_INCREASE_EVERY = 5;
@@ -40,8 +41,7 @@ function useTileCostTracker(
 
   const findResourceWitchCanPay = useCallback(() => {
     let resourceToUse: ResourceNames | null = null;
-    ["wood", "stone", "food", "gold"].forEach((resource) => {
-      console.log(resource, resourcePrice[resource as ResourceNames]);
+    shuffle(["wood", "stone", "food", "gold"]).forEach((resource) => {
       if (canPriceBePaid({ [resource]: resourcePrice[resource] })) {
         resourceToUse = resource as ResourceNames;
       }

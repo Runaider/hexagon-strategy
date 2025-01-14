@@ -190,6 +190,18 @@ function GameCoreContextProvider({ children }: Props) {
         incrementResourceUsedTimes();
       }
 
+      // if (currentTurn === 5) {
+      //   const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
+      //   for (const hex of nearbyHexes) {
+      //     const freeHex = !cellValues[`${hex[0]},${hex[1]}`];
+      //     if (freeHex) {
+      //       const tile = createToxicTile(hex[0], hex[1], currentTurn);
+      //       setCell(tile.row, tile.col, Tile_TOXIC);
+      //       break;
+      //     }
+      //   }
+      // }
+
       if (Math.random() < toxicTileProbability!) {
         const nearbyHexes = getNearbyHexes(row, col, rows!, cols!);
         for (const hex of nearbyHexes) {

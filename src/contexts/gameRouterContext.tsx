@@ -22,7 +22,7 @@ const GameRouterContext = createContext<ContextValues>({} as ContextValues);
 const useGameRouterContext = () => useContext(GameRouterContext);
 
 function GameRouterProvider({ menu, game, leaderboard }: Props) {
-  const [startPressed, setStartPressed] = useState(false);
+  const [startPressed, setStartPressed] = useState(true);
   const onStartPress = useCallback(() => {
     setStartPressed(true);
   }, [setStartPressed]);

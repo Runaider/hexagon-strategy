@@ -14,6 +14,7 @@ import GameLayout from "./components/GameLayout";
 import { GameRouterProvider } from "./contexts/gameRouterContext";
 import StartScreen from "./components/StartScrean";
 import { ResourceIconAnimationProvider } from "./contexts/resourceIconAnimationContext";
+import { TutorialContextProvider } from "./contexts/tutorialContext";
 
 Amplify.configure(outputs);
 
@@ -26,7 +27,11 @@ createRoot(document.getElementById("root")!).render(
           <QuestContextProvider>
             <GameRouterProvider
               menu={<StartScreen />}
-              game={<GameLayout />}
+              game={
+                <TutorialContextProvider>
+                  <GameLayout />
+                </TutorialContextProvider>
+              }
               leaderboard={<></>}
             ></GameRouterProvider>
           </QuestContextProvider>

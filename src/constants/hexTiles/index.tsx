@@ -141,6 +141,29 @@ Tile_CCMMMM.sides[3].img = CCMMMM_r3;
 Tile_CCMMMM.sides[4].img = CCMMMM_r4;
 Tile_CCMMMM.sides[5].img = CCMMMM_r5;
 
+const Tile_FFCCCC = new Tile([
+  TileSectionType.Forest,
+  TileSectionType.Forest,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.City,
+  TileSectionType.City,
+]);
+
+import FFCCCC_r0 from "../../assets/ffcccc/FFCCCC_r0.png";
+import FFCCCC_r1 from "../../assets/ffcccc/FFCCCC_r5.png";
+import FFCCCC_r2 from "../../assets/ffcccc/FFCCCC_r4.png";
+import FFCCCC_r3 from "../../assets/ffcccc/FFCCCC_r3.png";
+import FFCCCC_r4 from "../../assets/ffcccc/FFCCCC_r2.png";
+import FFCCCC_r5 from "../../assets/ffcccc/FFCCCC_r1.png";
+
+Tile_FFCCCC.sides[0].img = FFCCCC_r0;
+Tile_FFCCCC.sides[1].img = FFCCCC_r1;
+Tile_FFCCCC.sides[2].img = FFCCCC_r2;
+Tile_FFCCCC.sides[3].img = FFCCCC_r3;
+Tile_FFCCCC.sides[4].img = FFCCCC_r4;
+Tile_FFCCCC.sides[5].img = FFCCCC_r5;
+
 const Tile_FFMMMM = new Tile([
   TileSectionType.Forest,
   TileSectionType.Forest,
@@ -376,6 +399,7 @@ const allTiles = [
 
   Tile_FFPPPP,
   Tile_FFMMMM,
+  Tile_FFCCCC,
 
   Tile_CCPPPP,
   Tile_CCFFFF,
